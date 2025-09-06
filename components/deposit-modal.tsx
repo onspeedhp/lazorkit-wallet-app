@@ -1,94 +1,128 @@
-"use client"
+'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { useAuth } from "./auth-provider"
-import { useWallet } from "./wallet-provider"
-import { useToast } from "@/hooks/use-toast"
-import { Copy, QrCode } from "lucide-react"
+import { useState } from 'react';
+import { Copy, QrCode } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { CopyButton } from './ui/copy-button';
+import { QRCode } from '@/lib/utils/qr';
+import { useWalletStore, TokenSym } from '@/lib/store/wallet';
+import { formatAddress } from '@/lib/utils/format';
+import { t } from '@/lib/i18n';
 
 interface DepositModalProps {
-  isOpen: boolean
-  onClose: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function DepositModal({ isOpen, onClose }: DepositModalProps) {
-  const { language, userState } = useAuth()
-  const { truncateAddress } = useWallet()
-  const { toast } = useToast()
+export const DepositModal = ({ open, onOpenChange }: DepositModalProps) => {
+  const { pubkey, tokens } = useWalletStore();
+  const [selectedToken, setSelectedToken] = useState<TokenSym>('SOL');
 
-  const t = (en: string, vi: string) => (language === "EN" ? en : vi)
+  const selectedTokenData = tokens.find((t) => t.symbol === selectedToken);
 
-  const handleCopyAddress = () => {
-    navigator.clipboard.writeText(userState.pubkey)
-    toast({
-      title: t("Copied", "Đã sao chép"),
-      description: t("Wallet address copied to clipboard", "Địa chỉ ví đã được sao chép"),
-    })
+  if (!pubkey) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>{t('deposit.title')}</DialogTitle>
+          </DialogHeader>
+          <div className='p-6 text-center'>
+            <p className='text-muted-foreground'>
+              No wallet available for deposits.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-card border-border/50 max-w-md">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{t("Deposit Crypto", "Nạp Crypto")}</DialogTitle>
+          <DialogTitle>{t('deposit.title')}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className='space-y-6'>
+          {/* Token Selection */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>
+              {t('deposit.selectToken')}
+            </label>
+            <Select
+              value={selectedToken}
+              onValueChange={(value: TokenSym) => setSelectedToken(value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.symbol} value={token.symbol}>
+                    {token.symbol}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Public Key */}
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>
+              {t('deposit.publicKey')}
+            </label>
+            <div className='flex items-center space-x-2'>
+              <div className='flex-1 p-3 bg-muted/50 rounded-lg'>
+                <p className='font-mono text-sm break-all'>
+                  {formatAddress(pubkey, 8, 8)}
+                </p>
+              </div>
+              <CopyButton text={pubkey} />
+            </div>
+          </div>
+
           {/* QR Code */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-6 text-center">
-              <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center mb-4">
-                <div className="text-center">
-                  <QrCode className="h-24 w-24 mx-auto mb-2 text-gray-800" />
-                  <p className="text-xs text-gray-600">{t("QR Code", "Mã QR")}</p>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {t("Scan this QR code to get your wallet address", "Quét mã QR này để lấy địa chỉ ví")}
-              </p>
-            </CardContent>
-          </Card>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>{t('deposit.qrCode')}</label>
+            <div className='flex justify-center p-4 bg-white rounded-lg'>
+              <QRCode value={pubkey} size={200} />
+            </div>
+            <p className='text-sm text-muted-foreground text-center'>
+              {t('deposit.scanToDeposit')}
+            </p>
+          </div>
 
-          {/* Address */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{t("Your Solana Address", "Địa chỉ Solana của bạn")}</span>
-                  <Button variant="ghost" size="sm" onClick={handleCopyAddress}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="p-3 bg-muted/20 rounded-lg">
-                  <p className="font-mono text-sm break-all">{userState.pubkey}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Deposit Note */}
+          <div className='p-3 bg-muted/50 rounded-lg'>
+            <p className='text-sm text-muted-foreground'>
+              {t('deposit.depositNote')}
+            </p>
+          </div>
 
-          {/* Instructions */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <h4 className="font-medium mb-2">{t("How to deposit", "Cách nạp tiền")}</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>• {t("Copy your wallet address above", "Sao chép địa chỉ ví ở trên")}</li>
-                <li>• {t("Send Solana tokens to this address", "Gửi token Solana đến địa chỉ này")}</li>
-                <li>• {t("Funds will appear in your wallet", "Tiền sẽ xuất hiện trong ví của bạn")}</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Warning */}
-          <div className="text-xs text-muted-foreground text-center p-3 bg-destructive/10 rounded-lg">
-            {t(
-              "⚠️ This is a demo. Do not send real funds to this address.",
-              "⚠️ Đây là demo. Không gửi tiền thật đến địa chỉ này.",
-            )}
+          {/* Actions */}
+          <div className='flex space-x-2'>
+            <Button
+              variant='outline'
+              onClick={() => onOpenChange(false)}
+              className='flex-1'
+            >
+              {t('common.close')}
+            </Button>
+            <Button onClick={() => onOpenChange(false)} className='flex-1'>
+              {t('deposit.copyAddress')}
+            </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

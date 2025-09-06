@@ -1,5 +1,7 @@
-"use client"
+'use client';
 
+import { AlertTriangle } from 'lucide-react';
+import { Button } from './ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,43 +11,50 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useAuth } from "./auth-provider"
+} from './ui/alert-dialog';
+import { Device } from '@/lib/store/wallet';
+import { t } from '@/lib/i18n';
 
 interface RemoveDeviceDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  deviceName: string
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  device: Device | null;
+  onConfirm: () => void;
 }
 
-export function RemoveDeviceDialog({ isOpen, onClose, onConfirm, deviceName }: RemoveDeviceDialogProps) {
-  const { language } = useAuth()
-
-  const t = (en: string, vi: string) => (language === "EN" ? en : vi)
+export const RemoveDeviceDialog = ({
+  open,
+  onOpenChange,
+  device,
+  onConfirm,
+}: RemoveDeviceDialogProps) => {
+  if (!device) return null;
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={onClose}>
-      <AlertDialogContent className="glass-card border-border/50">
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("Remove Device", "Xóa thiết bị")}</AlertDialogTitle>
+          <AlertDialogTitle className='flex items-center space-x-2'>
+            <AlertTriangle className='h-5 w-5 text-destructive' />
+            <span>{t('devices.removeDevice')}</span>
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            {t(
-              `Are you sure you want to remove "${deviceName}"? This device will no longer be able to access your wallet.`,
-              `Bạn có chắc chắn muốn xóa "${deviceName}"? Thiết bị này sẽ không thể truy cập ví của bạn nữa.`,
-            )}
+            {t('devices.confirmRemove')}
+            <br />
+            <br />
+            <strong>Device:</strong> {device.name} ({device.platform})
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-transparent">{t("Cancel", "Hủy")}</AlertDialogCancel>
+          <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
           >
-            {t("Remove", "Xóa")}
+            {t('devices.removeDevice')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
-}
+  );
+};

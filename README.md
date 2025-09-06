@@ -1,30 +1,28 @@
-# Lazorkit Wallet app
+# Lazorkit Wallet
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+Mobile-first wallet prototype with rich demo mode.
 
-[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/onspeedhps-projects/v0-lazorkit-wallet-app)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/fMmNRpac5gi)
+## Project Structure
 
-## Overview
+- `app/` Next.js routes
+- `components/`
+  - `apps/` re-exports for apps-related components
+  - `ui/` design system primitives (re-exported by `components/ui/index.ts`)
+  - page-level composites (e.g., `onramp-form.tsx`, `swap-form.tsx`)
+- `lib/`
+  - `demoSeed.ts` rich demo data generators
+  - `i18n/` translation files
+  - `store/` zustand store
+  - `utils/` helpers (format, price, qr)
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+Import UI primitives from the barrel file to simplify paths:
 
-## Deployment
+```ts
+import { Button, Card, Tabs } from '@/components/ui'
+```
 
-Your project is live at:
+Apps-related imports can use the apps barrel:
 
-**[https://vercel.com/onspeedhps-projects/v0-lazorkit-wallet-app](https://vercel.com/onspeedhps-projects/v0-lazorkit-wallet-app)**
-
-## Build your app
-
-Continue building your app on:
-
-**[https://v0.app/chat/projects/fMmNRpac5gi](https://v0.app/chat/projects/fMmNRpac5gi)**
-
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+```ts
+import { AppCard, AppDetailModal } from '@/components/apps'
+```

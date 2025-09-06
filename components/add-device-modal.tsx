@@ -1,133 +1,139 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent } from "@/components/ui/card"
-import { useAuth } from "./auth-provider"
-import { useToast } from "@/hooks/use-toast"
-import { Copy, QrCode, Smartphone } from "lucide-react"
+import { useState } from 'react';
+import { Smartphone, QrCode, Copy, Link } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Card, CardContent } from './ui/card';
+import { CopyButton } from './ui/copy-button';
+import { QRCode } from '@/lib/utils/qr';
+import { useWalletStore } from '@/lib/store/wallet';
+import { t } from '@/lib/i18n';
+import { toast } from '@/hooks/use-toast';
 
 interface AddDeviceModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onAdd: (deviceName: string) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function AddDeviceModal({ isOpen, onClose, onAdd }: AddDeviceModalProps) {
-  const [deviceName, setDeviceName] = useState("")
-  const { language } = useAuth()
-  const { toast } = useToast()
+export const AddDeviceModal = ({ open, onOpenChange }: AddDeviceModalProps) => {
+  const { addDevice } = useWalletStore();
+  const [pairingLink] = useState('https://lazorkit.com/pair/abc123xyz');
 
-  const t = (en: string, vi: string) => (language === "EN" ? en : vi)
-
-  const pairingLink = `https://lazorkit.app/pair?code=${Math.random().toString(36).substr(2, 9)}`
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(pairingLink)
-    toast({
-      title: t("Copied", "Đã sao chép"),
-      description: t("Pairing link copied to clipboard", "Liên kết ghép nối đã được sao chép"),
-    })
-  }
-
-  const handleAdd = () => {
-    if (deviceName.trim()) {
-      onAdd(deviceName.trim())
-      setDeviceName("")
-      onClose()
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pairingLink);
+      console.log('device_link_copied', { pairingLink });
+      toast({
+        title: t('devices.linkCopied'),
+        description: 'Pairing link copied to clipboard',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to copy pairing link',
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
-  const handleClose = () => {
-    setDeviceName("")
-    onClose()
-  }
+  const handleAddDemoDevice = () => {
+    const newDevice = {
+      id: Date.now().toString(),
+      name: 'Demo Device',
+      platform: 'Web' as const,
+      lastActive: 'Just now',
+      location: 'Current Location',
+    };
+
+    addDevice(newDevice);
+    console.log('device_add_opened', {
+      deviceId: newDevice.id,
+      deviceName: newDevice.name,
+    });
+
+    toast({
+      title: 'Device added',
+      description: 'Demo device has been added successfully',
+    });
+
+    onOpenChange(false);
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="glass-card border-border/50 max-w-md">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <Smartphone className="h-5 w-5" />
-            {t("Add New Device", "Thêm thiết bị mới")}
+          <DialogTitle className='flex items-center space-x-2'>
+            <Smartphone className='h-5 w-5' />
+            <span>{t('devices.addDevice')}</span>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {/* Device Name */}
-          <div className="space-y-2">
-            <Label>{t("Device Name", "Tên thiết bị")}</Label>
-            <Input
-              placeholder={t("e.g., My iPhone", "ví dụ: iPhone của tôi")}
-              value={deviceName}
-              onChange={(e) => setDeviceName(e.target.value)}
-              className="glass"
-            />
+        <div className='space-y-6'>
+          {/* Instructions */}
+          <div className='text-center space-y-2'>
+            <p className='text-muted-foreground'>
+              Scan the QR code or copy the pairing link to add a new device to
+              your wallet.
+            </p>
           </div>
 
           {/* QR Code */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-6 text-center">
-              <div className="w-48 h-48 mx-auto bg-white rounded-lg flex items-center justify-center mb-4">
-                <div className="text-center">
-                  <QrCode className="h-24 w-24 mx-auto mb-2 text-gray-800" />
-                  <p className="text-xs text-gray-600">{t("Pairing QR", "QR ghép nối")}</p>
+          <Card>
+            <CardContent className='p-6'>
+              <div className='flex justify-center mb-4'>
+                <div className='bg-white p-4 rounded-lg'>
+                  <QRCode value={pairingLink} size={200} />
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {t("Scan this QR code with your new device", "Quét mã QR này bằng thiết bị mới của bạn")}
+              <p className='text-sm text-muted-foreground text-center'>
+                {t('devices.qrCode')}
               </p>
             </CardContent>
           </Card>
 
           {/* Pairing Link */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label>{t("Pairing Link", "Liên kết ghép nối")}</Label>
-                  <Button variant="ghost" size="sm" onClick={handleCopyLink}>
-                    <Copy className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="p-3 bg-muted/20 rounded-lg">
-                  <p className="font-mono text-xs break-all">{pairingLink}</p>
-                </div>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium'>
+              {t('devices.pairingLink')}
+            </label>
+            <div className='flex items-center space-x-2'>
+              <div className='flex-1 p-3 bg-muted/50 rounded-lg'>
+                <p className='text-sm font-mono break-all'>{pairingLink}</p>
               </div>
-            </CardContent>
-          </Card>
+              <CopyButton text={pairingLink} />
+            </div>
+          </div>
 
-          {/* Instructions */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <h4 className="font-medium mb-2">{t("How to pair", "Cách ghép nối")}</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
-                <li>1. {t("Open Lazorkit Wallet on your new device", "Mở Lazorkit Wallet trên thiết bị mới")}</li>
-                <li>2. {t("Scan the QR code or use the pairing link", "Quét mã QR hoặc sử dụng liên kết ghép nối")}</li>
-                <li>3. {t("Follow the setup instructions", "Làm theo hướng dẫn thiết lập")}</li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          {/* Demo Notice */}
-          <div className="text-xs text-muted-foreground text-center p-3 bg-muted/10 rounded-lg">
-            {t("This is a demo. The pairing process is simulated.", "Đây là demo. Quá trình ghép nối được mô phỏng.")}
+          {/* Demo Button */}
+          <div className='p-4 bg-muted/50 rounded-lg'>
+            <p className='text-sm text-muted-foreground mb-3'>
+              This is a demo. In a real app, you would scan the QR code or use
+              the pairing link.
+            </p>
+            <Button onClick={handleAddDemoDevice} className='w-full'>
+              <Smartphone className='mr-2 h-4 w-4' />
+              Add Demo Device
+            </Button>
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleClose} className="flex-1 bg-transparent">
-              {t("Cancel", "Hủy")}
+          <div className='flex space-x-2'>
+            <Button
+              variant='outline'
+              onClick={() => onOpenChange(false)}
+              className='flex-1'
+            >
+              {t('common.cancel')}
             </Button>
-            <Button onClick={handleAdd} disabled={!deviceName.trim()} className="flex-1">
-              {t("Add Device", "Thêm thiết bị")}
+            <Button onClick={handleCopyLink} className='flex-1'>
+              <Copy className='mr-2 h-4 w-4' />
+              {t('devices.copyLink')}
             </Button>
           </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

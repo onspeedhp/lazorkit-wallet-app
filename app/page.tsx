@@ -1,37 +1,26 @@
-"use client"
+'use client';
 
-import { OnRampScreen } from "@/components/onramp-screen"
-import { MainApp } from "@/components/main-app"
-import { WalletProvider } from "@/components/wallet-provider"
-import { AuthProvider, useAuth } from "@/components/auth-provider"
-import { LoadingScreen } from "@/components/loading-screen"
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useWalletStore } from '@/lib/store/wallet';
+import { OnRampScreen } from '@/components/onramp-screen';
 
-export default function HomePage() {
-  return (
-    <AuthProvider>
-      <WalletProvider>
-        <div className="min-h-screen bg-background">
-          <WalletRouter />
-        </div>
-      </WalletProvider>
-    </AuthProvider>
-  )
-}
+export default function Home() {
+  const router = useRouter();
+  const { hasPasskey, hasWallet } = useWalletStore();
 
-function WalletRouter() {
-  const { userState, isLoading } = useAuth()
+  useEffect(() => {
+    // Smart routing based on wallet state
+    if (hasWallet) {
+      router.push('/buy');
+    }
+  }, [hasWallet, router]);
 
-  // Show loading screen while initializing
-  if (isLoading) {
-    return <LoadingScreen />
+  // Show On-Ramp screen if no wallet exists
+  if (!hasPasskey || !hasWallet) {
+    return <OnRampScreen />;
   }
 
-  // State 1 & 2: No wallet -> show OnRamp only
-  // (Both no passkey + no wallet, and has passkey + no wallet show OnRamp)
-  if (!userState.hasWallet) {
-    return <OnRampScreen />
-  }
-
-  // State 3: Has wallet -> show main app
-  return <MainApp />
+  // This should not be reached due to useEffect redirect
+  return <OnRampScreen />;
 }

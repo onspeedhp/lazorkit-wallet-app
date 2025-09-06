@@ -7,6 +7,8 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
+import { DemoInitializer } from "@/components/demo-initializer"
+import { DemoBadge } from "@/components/demo-badge"
 
 export const metadata: Metadata = {
   title: "Lazorkit Wallet",
@@ -25,6 +27,8 @@ export default function RootLayout({
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
         <Suspense fallback={null}>
           <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+            <DemoInitializer />
+            <DemoBadge />
             {children}
             <Toaster />
           </ThemeProvider>

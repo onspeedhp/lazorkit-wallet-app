@@ -1,238 +1,238 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent } from "@/components/ui/card"
-import { useAuth } from "./auth-provider"
-import { useWallet } from "./wallet-provider"
-import { useToast } from "@/hooks/use-toast"
-import { Scan, Clipboard } from "lucide-react"
+import { useState } from 'react';
+import { Send, Clipboard, QrCode, ArrowRight } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { useWalletStore, TokenSym } from '@/lib/store/wallet';
+import { formatTokenAmount } from '@/lib/utils/format';
+import { isValidSolanaAddress } from '@/lib/utils/address';
+import { t } from '@/lib/i18n';
+import { toast } from '@/hooks/use-toast';
 
 interface SendModalProps {
-  isOpen: boolean
-  onClose: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function SendModal({ isOpen, onClose }: SendModalProps) {
-  const [selectedToken, setSelectedToken] = useState("")
-  const [recipient, setRecipient] = useState("")
-  const [amount, setAmount] = useState("")
-  const [isProcessing, setIsProcessing] = useState(false)
-  const { language } = useAuth()
-  const { tokens, formatCurrency, addTransaction, updateTokenBalance, getTokenBySymbol } = useWallet()
-  const { toast } = useToast()
+export const SendModal = ({ open, onOpenChange }: SendModalProps) => {
+  const { tokens, sendFake } = useWalletStore();
+  const [selectedToken, setSelectedToken] = useState<TokenSym>('SOL');
+  const [recipient, setRecipient] = useState('');
+  const [amount, setAmount] = useState('');
+  const [error, setError] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const t = (en: string, vi: string) => (language === "EN" ? en : vi)
+  const selectedTokenData = tokens.find((t) => t.symbol === selectedToken);
+  const amountNum = parseFloat(amount) || 0;
 
-  const availableTokens = tokens.filter((token) => token.amount > 0)
-  const selectedTokenData = getTokenBySymbol(selectedToken)
-  const maxBalance = selectedTokenData?.amount || 0
-  const estimatedFee = 0.000005 // SOL
-
-  const isValidAmount = amount && Number.parseFloat(amount) > 0 && Number.parseFloat(amount) <= maxBalance
-  const isValidRecipient = recipient && recipient.length > 10
-
-  const handlePasteAddress = async () => {
-    try {
-      const text = await navigator.clipboard.readText()
-      setRecipient(text)
-      toast({
-        title: t("Pasted", "Đã dán"),
-        description: t("Address pasted from clipboard", "Địa chỉ đã được dán từ clipboard"),
-      })
-    } catch (error) {
-      toast({
-        title: t("Error", "Lỗi"),
-        description: t("Could not paste from clipboard", "Không thể dán từ clipboard"),
-        variant: "destructive",
-      })
+  const validateForm = () => {
+    if (!recipient.trim()) {
+      setError('Please enter recipient address');
+      return false;
     }
-  }
 
-  const handleScanQR = () => {
-    // Simulate QR scan
-    const mockAddress = "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
-    setRecipient(mockAddress)
-    toast({
-      title: t("QR Scanned", "Đã quét QR"),
-      description: t("Address scanned successfully", "Địa chỉ đã được quét thành công"),
-    })
-  }
+    if (!isValidSolanaAddress(recipient)) {
+      setError(t('send.invalidAddress'));
+      return false;
+    }
+
+    if (!amount || amountNum <= 0) {
+      setError('Please enter a valid amount');
+      return false;
+    }
+
+    if (!selectedTokenData || amountNum > selectedTokenData.amount) {
+      setError(t('send.insufficientBalance'));
+      return false;
+    }
+
+    setError('');
+    return true;
+  };
 
   const handleSend = async () => {
-    if (!isValidAmount || !isValidRecipient || isProcessing) return
+    if (!validateForm()) return;
 
-    setIsProcessing(true)
+    setIsProcessing(true);
+
+    // Simulate processing delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    sendFake(selectedToken, amountNum, recipient);
+    console.log('send_confirm_success', {
+      token: selectedToken,
+      amount: amountNum,
+      recipient,
+    });
 
     toast({
-      title: t("Sending...", "Đang gửi..."),
-      description: t(`Sending ${amount} ${selectedToken}`, `Đang gửi ${amount} ${selectedToken}`),
-    })
+      title: 'Transaction sent',
+      description: `${amountNum} ${selectedToken} sent successfully`,
+    });
 
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    // Reset form
+    setRecipient('');
+    setAmount('');
+    setError('');
+    setIsProcessing(false);
+    onOpenChange(false);
+  };
 
+  const handleMaxClick = () => {
+    if (selectedTokenData) {
+      setAmount(selectedTokenData.amount.toString());
+      setError('');
+    }
+  };
+
+  const handlePaste = async () => {
     try {
-      // Update balance
-      const currentBalance = selectedTokenData?.amount || 0
-      updateTokenBalance(selectedToken, currentBalance - Number.parseFloat(amount))
-
-      // Add transaction
-      addTransaction({
-        type: "send",
-        amount: Number.parseFloat(amount),
-        token: selectedToken,
-        status: "completed",
-      })
-
-      toast({
-        title: t("Sent successfully", "Gửi thành công"),
-        description: t(`Sent ${amount} ${selectedToken}`, `Đã gửi ${amount} ${selectedToken}`),
-      })
-
-      // Reset form and close
-      setSelectedToken("")
-      setRecipient("")
-      setAmount("")
-      onClose()
+      const text = await navigator.clipboard.readText();
+      setRecipient(text);
+      setError('');
     } catch (error) {
       toast({
-        title: t("Send failed", "Gửi thất bại"),
-        description: t("Please try again", "Vui lòng thử lại"),
-        variant: "destructive",
-      })
-    } finally {
-      setIsProcessing(false)
+        title: 'Error',
+        description: 'Failed to paste from clipboard',
+        variant: 'destructive',
+      });
     }
-  }
+  };
 
-  const handleClose = () => {
-    if (!isProcessing) {
-      setSelectedToken("")
-      setRecipient("")
-      setAmount("")
-      onClose()
-    }
-  }
+  const availableTokens = tokens.filter((t) => t.amount > 0);
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="glass-card border-border/50 max-w-md">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold">{t("Send Crypto", "Gửi Crypto")}</DialogTitle>
+          <DialogTitle className='flex items-center space-x-2'>
+            <Send className='h-5 w-5' />
+            <span>{t('send.title')}</span>
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className='space-y-6'>
           {/* Token Selection */}
-          <div className="space-y-2">
-            <Label>{t("Choose Token", "Chọn Token")}</Label>
-            <Select value={selectedToken} onValueChange={setSelectedToken} disabled={isProcessing}>
-              <SelectTrigger className="glass">
-                <SelectValue placeholder={t("Select a token", "Chọn một token")} />
+          <div className='space-y-2'>
+            <Label>{t('send.selectToken')}</Label>
+            <Select
+              value={selectedToken}
+              onValueChange={(value: TokenSym) => setSelectedToken(value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {availableTokens.map((token) => (
                   <SelectItem key={token.symbol} value={token.symbol}>
-                    <div className="flex items-center gap-2">
-                      <span>{token.icon}</span>
-                      <span>{token.symbol}</span>
-                      <span className="text-muted-foreground">({token.amount.toFixed(4)})</span>
-                    </div>
+                    {token.symbol}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {selectedTokenData && (
+              <p className='text-sm text-muted-foreground'>
+                Balance:{' '}
+                {formatTokenAmount(
+                  selectedTokenData.amount,
+                  selectedTokenData.symbol
+                )}
+              </p>
+            )}
           </div>
 
           {/* Recipient Address */}
-          <div className="space-y-2">
-            <Label>{t("Recipient Address", "Địa chỉ người nhận")}</Label>
-            <div className="flex gap-2">
+          <div className='space-y-2'>
+            <Label>{t('send.recipient')}</Label>
+            <div className='flex space-x-2'>
               <Input
-                placeholder={t("Enter wallet address", "Nhập địa chỉ ví")}
+                placeholder={t('send.enterAddress')}
                 value={recipient}
-                onChange={(e) => setRecipient(e.target.value)}
-                className="glass"
-                disabled={isProcessing}
+                onChange={(e) => {
+                  setRecipient(e.target.value);
+                  setError('');
+                }}
+                className={error ? 'border-destructive' : ''}
               />
-              <Button variant="outline" size="icon" onClick={handlePasteAddress} disabled={isProcessing}>
-                <Clipboard className="h-4 w-4" />
+              <Button variant='outline' size='sm' onClick={handlePaste}>
+                <Clipboard className='h-4 w-4' />
               </Button>
-              <Button variant="outline" size="icon" onClick={handleScanQR} disabled={isProcessing}>
-                <Scan className="h-4 w-4" />
+              <Button variant='outline' size='sm' disabled>
+                <QrCode className='h-4 w-4' />
               </Button>
             </div>
+            {error && <p className='text-sm text-destructive'>{error}</p>}
           </div>
 
           {/* Amount */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>{t("Amount", "Số lượng")}</Label>
-              {selectedTokenData && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setAmount(maxBalance.toString())}
-                  disabled={isProcessing}
-                >
-                  {t("Max", "Tối đa")}: {maxBalance.toFixed(4)}
-                </Button>
-              )}
+          <div className='space-y-2'>
+            <Label>{t('send.enterAmount')}</Label>
+            <div className='flex space-x-2'>
+              <Input
+                type='number'
+                placeholder='0.00'
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                  setError('');
+                }}
+                className={error ? 'border-destructive' : ''}
+              />
+              <Button variant='outline' size='sm' onClick={handleMaxClick}>
+                {t('common.max')}
+              </Button>
             </div>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="glass text-lg"
-              disabled={isProcessing || !selectedToken}
-            />
           </div>
 
-          {/* Transaction Summary */}
-          {selectedToken && amount && isValidAmount && (
-            <Card className="glass border-border/30">
-              <CardContent className="p-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>{t("Amount", "Số lượng")}</span>
-                  <span>
-                    {amount} {selectedToken}
-                  </span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>{t("Network fee", "Phí mạng")}</span>
-                  <span>{estimatedFee} SOL</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>{t("Total value", "Tổng giá trị")}</span>
-                  <span>{formatCurrency(Number.parseFloat(amount) * (selectedTokenData?.price || 0))}</span>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Estimated Fee */}
+          <div className='p-3 bg-muted/50 rounded-lg'>
+            <div className='flex justify-between text-sm'>
+              <span className='text-muted-foreground'>
+                {t('send.estimatedFee')}
+              </span>
+              <span>0.000005 SOL</span>
+            </div>
+          </div>
 
-          {/* Validation Errors */}
-          {amount && !isValidAmount && (
-            <p className="text-xs text-destructive">{t("Insufficient balance", "Số dư không đủ")}</p>
-          )}
+          {/* Actions */}
+          <div className='flex space-x-2'>
+            <Button
+              variant='outline'
+              onClick={() => onOpenChange(false)}
+              className='flex-1'
+            >
+              {t('common.cancel')}
+            </Button>
+            <Button
+              onClick={handleSend}
+              className='flex-1'
+              disabled={isProcessing || !!error}
+            >
+              {isProcessing ? (
+                <div className='flex items-center space-x-2'>
+                  <div className='animate-spin rounded-full h-4 w-4 border-b-2 border-white'></div>
+                  <span>Sending...</span>
+                </div>
+              ) : (
+                <div className='flex items-center space-x-2'>
+                  <span>{t('send.confirm')}</span>
+                  <ArrowRight className='h-4 w-4' />
+                </div>
+              )}
+            </Button>
+          </div>
         </div>
-
-        <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={handleClose} disabled={isProcessing} className="flex-1 bg-transparent">
-            {t("Cancel", "Hủy")}
-          </Button>
-          <Button
-            onClick={handleSend}
-            disabled={!isValidAmount || !isValidRecipient || isProcessing}
-            className="flex-1"
-          >
-            {isProcessing ? t("Sending...", "Đang gửi...") : t("Send", "Gửi")}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

@@ -1,148 +1,125 @@
-"use client"
+'use client';
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { useAuth } from "./auth-provider"
-import { useWallet } from "./wallet-provider"
-import { useToast } from "@/hooks/use-toast"
-import { Copy, Send, Plus, TrendingUp, TrendingDown, ExternalLink } from "lucide-react"
+import { TrendingUp, TrendingDown, Send, Plus } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
+import { Card, CardContent } from './ui/card';
+import { CopyButton } from './ui/copy-button';
+import { TokenHolding } from '@/lib/store/wallet';
+import {
+  formatCurrency,
+  formatTokenAmount,
+  formatPercentage,
+} from '@/lib/utils/format';
+import { t } from '@/lib/i18n';
+import { generateSparkline } from '@/lib/utils/price';
+import { Sparkline } from './ui/sparkline';
 
 interface TokenDetailModalProps {
-  isOpen: boolean
-  onClose: () => void
-  tokenSymbol: string
+  token: TokenHolding;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function TokenDetailModal({ isOpen, onClose, tokenSymbol }: TokenDetailModalProps) {
-  const { language } = useAuth()
-  const { getTokenBySymbol, formatCurrency } = useWallet()
-  const { toast } = useToast()
-
-  const token = getTokenBySymbol(tokenSymbol)
-  const t = (en: string, vi: string) => (language === "EN" ? en : vi)
-
-  if (!token) return null
-
-  const handleCopyContract = () => {
-    if (token.contractAddress) {
-      navigator.clipboard.writeText(token.contractAddress)
-      toast({
-        title: t("Copied", "Đã sao chép"),
-        description: t("Contract address copied", "Địa chỉ hợp đồng đã được sao chép"),
-      })
-    }
-  }
-
-  const marketCap = 1234567890 // Mock data
-  const totalSupply = 1000000000 // Mock data
+export const TokenDetailModal = ({
+  token,
+  open,
+  onOpenChange,
+}: TokenDetailModalProps) => {
+  const value = token.amount * token.priceUsd;
+  const ChangeIcon = token.change24hPct >= 0 ? TrendingUp : TrendingDown;
+  const changeColor =
+    token.change24hPct >= 0 ? 'text-green-500' : 'text-red-500';
+  const spark = generateSparkline(token.symbol + token.mint, 14, token.priceUsd, 0.04);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="glass-card border-border/50 max-w-md">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className='sm:max-w-md'>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3">
-            <span className="text-2xl">{token.icon}</span>
+          <DialogTitle className='flex items-center space-x-3'>
+            <div className='w-10 h-10 bg-muted rounded-full flex items-center justify-center'>
+              <span className='text-sm font-semibold'>
+                {token.symbol.slice(0, 2)}
+              </span>
+            </div>
             <div>
-              <div className="text-xl font-bold">{token.name}</div>
-              <div className="text-sm text-muted-foreground">{token.symbol}</div>
+              <div className='font-semibold'>{token.symbol}</div>
+              <div className='text-sm text-muted-foreground'>Solana Token</div>
             </div>
           </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* Price & Change */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <div className="text-center space-y-2">
-                <p className="text-2xl font-bold">{formatCurrency(token.price)}</p>
-                <Badge variant={token.change24h >= 0 ? "default" : "destructive"} className="text-sm">
-                  {token.change24h >= 0 ? (
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                  ) : (
-                    <TrendingDown className="h-4 w-4 mr-1" />
-                  )}
-                  {Math.abs(token.change24h).toFixed(2)}% (24h)
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Holdings */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4 space-y-3">
-              <h4 className="font-medium">{t("Your Holdings", "Nắm giữ của bạn")}</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("Balance", "Số dư")}</span>
-                  <span className="font-medium">
-                    {token.amount.toFixed(4)} {token.symbol}
-                  </span>
+        <div className='space-y-6'>
+          {/* Balance */}
+          <Card>
+            <CardContent className='p-4'>
+              <div className='text-center space-y-2'>
+                <div className='text-2xl font-bold'>
+                  {formatTokenAmount(token.amount, token.symbol)}
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("Value", "Giá trị")}</span>
-                  <span className="font-medium">{formatCurrency(token.amount * token.price)}</span>
+                <div className='text-lg text-muted-foreground'>
+                  {formatCurrency(value)}
+                </div>
+                <div
+                  className={`text-sm flex items-center justify-center ${changeColor}`}
+                >
+                  <ChangeIcon className='h-3 w-3 mr-1' />
+                  {formatPercentage(token.change24hPct)} (24h)
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Token Info */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4 space-y-3">
-              <h4 className="font-medium">{t("Token Information", "Thông tin Token")}</h4>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("Market Cap", "Vốn hóa thị trường")}</span>
-                  <span>{formatCurrency(marketCap)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">{t("Total Supply", "Tổng cung")}</span>
-                  <span>{totalSupply.toLocaleString()}</span>
-                </div>
-                {token.contractAddress && (
-                  <>
-                    <Separator />
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{t("Contract", "Hợp đồng")}</span>
-                        <Button variant="ghost" size="sm" onClick={handleCopyContract}>
-                          <Copy className="h-3 w-3" />
-                        </Button>
-                      </div>
-                      <p className="font-mono text-xs break-all bg-muted/20 p-2 rounded">{token.contractAddress}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div className='space-y-4'>
+            <div className='flex justify-between items-center'>
+              <span className='text-muted-foreground'>Price</span>
+              <span className='font-semibold'>
+                {formatCurrency(token.priceUsd)}
+              </span>
+            </div>
 
-          {/* Actions */}
-          <div className="grid grid-cols-2 gap-3">
-            <Button className="h-12">
-              <Send className="mr-2 h-4 w-4" />
-              {t("Send", "Gửi")}
-            </Button>
-            <Button variant="outline" className="h-12 bg-transparent">
-              <Plus className="mr-2 h-4 w-4" />
-              {t("Deposit", "Nạp tiền")}
-            </Button>
+            <div className='flex justify-between items-center'>
+              <span className='text-muted-foreground'>Market Cap</span>
+              <span className='font-semibold'>$2.1B</span>
+            </div>
+
+            <div className='flex justify-between items-center'>
+              <span className='text-muted-foreground'>Total Supply</span>
+              <span className='font-semibold'>{token.totalSupply ? token.totalSupply.toLocaleString() : '—'}</span>
+            </div>
+
+            {/* Sparkline */}
+            <div className='pt-2'>
+              <Sparkline data={spark} />
+              <div className='text-[10px] text-muted-foreground mt-1 text-right'>7d trend (demo)</div>
+            </div>
           </div>
 
-          {/* External Links */}
-          <Card className="glass border-border/30">
-            <CardContent className="p-4">
-              <Button variant="ghost" className="w-full justify-between">
-                <span>{t("View on Explorer", "Xem trên Explorer")}</span>
-                <ExternalLink className="h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
+          {/* Mint Address */}
+          <div className='space-y-2'>
+            <span className='text-sm font-medium'>Mint Address</span>
+            <div className='flex items-center space-x-2'>
+              <div className='flex-1 p-2 bg-muted/50 rounded text-sm font-mono break-all'>
+                {token.mint}
+              </div>
+              <CopyButton text={token.mint} />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className='grid grid-cols-2 gap-3'>
+            <Button variant='outline' className='h-12'>
+              <Send className='mr-2 h-4 w-4' />
+              {t('wallet.send')}
+            </Button>
+            <Button variant='outline' className='h-12'>
+              <Plus className='mr-2 h-4 w-4' />
+              {t('wallet.deposit')}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

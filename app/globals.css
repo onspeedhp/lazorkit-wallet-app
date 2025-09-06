@@ -5,75 +5,56 @@
 
 /* Lazorkit Wallet - Mobile-first crypto wallet prototype */
 :root {
-  --background: oklch(0.07 0 0); /* #111827 near-black */
-  --foreground: oklch(0.985 0 0); /* white text */
-  --card: oklch(0.12 0 0 / 0.8); /* dark card with transparency */
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.12 0 0 / 0.9);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.25 310); /* #C855FF pink-purple */
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.65 0.22 310); /* #A855F7 lighter pink-purple */
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.35 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.65 0.22 310); /* #A855F7 accent */
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.6 0.25 15); /* red for destructive actions */
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.3 0 0);
-  --input: oklch(0.12 0 0 / 0.8);
-  --ring: oklch(0.7 0.25 310); /* primary focus ring */
-  --chart-1: oklch(0.7 0.25 310);
-  --chart-2: oklch(0.65 0.22 310);
-  --chart-3: oklch(0.6 0.2 270);
-  --chart-4: oklch(0.35 0 0);
-  --chart-5: oklch(0.65 0.25 30);
-  --radius: 1rem; /* 16px rounded corners */
-  --sidebar: oklch(0.12 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.7 0.25 310);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.65 0.22 310);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.3 0 0);
-  --sidebar-ring: oklch(0.7 0.25 310);
+  /* Surfaces */
+  --background: #0E0F12; /* bg-app */
+  --foreground: #ECECF1;
+  --card: #14151B; /* bg-card */
+  --card-foreground: #ECECF1;
+  --popover: #1A1C23; /* bg-elev */
+  --popover-foreground: #ECECF1;
+  /* Brand */
+  --primary: #C855FF; /* pink-purple */
+  --primary-foreground: #100418;
+  --secondary: #9A4DFF; /* primary-2 */
+  --secondary-foreground: #0E0F12;
+  --accent: #FF7AD9; /* limited use */
+  --accent-foreground: #0E0F12;
+  /* Text & UI */
+  --muted: #1A1C23;
+  --muted-foreground: #A8A8B3; /* muted */
+  --subtle-foreground: #7C7D86; /* subtle */
+  --destructive: #EF4444;
+  --destructive-foreground: #0E0F12;
+  --border: #262834; /* borders */
+  --input: #14151B;
+  --ring: #C855FF; /* focus ring */
+  /* Charts */
+  --chart-1: #C855FF;
+  --chart-2: #9A4DFF;
+  --chart-3: #FF7AD9;
+  --chart-4: #7C7D86;
+  --chart-5: #A8A8B3;
+  /* Radii */
+  --radius: 1rem; /* ~16px, rounded-2xl vibe */
+  /* Sidebar */
+  --sidebar: #14151B;
+  --sidebar-foreground: #ECECF1;
+  --sidebar-primary: #C855FF;
+  --sidebar-primary-foreground: #100418;
+  --sidebar-accent: #9A4DFF;
+  --sidebar-accent-foreground: #0E0F12;
+  --sidebar-border: #262834;
+  --sidebar-ring: #C855FF;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #C855FF, #9A4DFF);
+  --gradient-secondary: linear-gradient(135deg, #9A4DFF, #7C7D86);
+  --gradient-accent: linear-gradient(135deg, #FF7AD9, #C855FF);
+  --gradient-card: linear-gradient(135deg, rgba(20,21,27,0.9), rgba(26,28,35,0.8));
 }
 
 .dark {
-  /* Dark mode uses same tokens since app is dark-first */
-  --background: oklch(0.07 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.12 0 0 / 0.8);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.12 0 0 / 0.9);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.7 0.25 310);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.65 0.22 310);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.35 0 0);
-  --muted-foreground: oklch(0.7 0 0);
-  --accent: oklch(0.65 0.22 310);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.6 0.25 15);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.3 0 0);
-  --input: oklch(0.12 0 0 / 0.8);
-  --ring: oklch(0.7 0.25 310);
-  --chart-1: oklch(0.7 0.25 310);
-  --chart-2: oklch(0.65 0.22 310);
-  --chart-3: oklch(0.6 0.2 270);
-  --chart-4: oklch(0.35 0 0);
-  --chart-5: oklch(0.65 0.25 30);
-  --sidebar: oklch(0.12 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.7 0.25 310);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.65 0.22 310);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.3 0 0);
-  --sidebar-ring: oklch(0.7 0.25 310);
+  /* Dark mode uses same tokens (dark-first app) */
 }
 
 @theme inline {
@@ -129,38 +110,64 @@
 
   /* Enhanced glassmorphism utility classes with better visual hierarchy */
   .glass {
-    background: rgba(255, 255, 255, 0.1);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
   }
 
   /* Added smooth animations and transitions for better UX */
   .animate-fade-in {
-    animation: fadeIn 0.3s ease-out;
+    animation: fadeIn 0.4s ease-out;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.4s ease-out;
+    animation: slideUp 0.5s ease-out;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.2s ease-out;
+    animation: scaleIn 0.3s ease-out;
   }
 
   .animate-pulse-glow {
     animation: pulseGlow 2s ease-in-out infinite;
   }
 
-  /* Added loading skeleton animation */
-  .animate-skeleton {
-    animation: skeleton 1.5s ease-in-out infinite;
+  .animate-bounce-gentle {
+    animation: bounceGentle 2s ease-in-out infinite;
   }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-shimmer {
+    animation: shimmer 2s linear infinite;
+  }
+
 
   @keyframes fadeIn {
     from {
@@ -203,6 +210,33 @@
     }
   }
 
+  @keyframes bounceGentle {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -200px 0;
+    }
+    100% {
+      background-position: calc(200px + 100%) 0;
+    }
+  }
+
   @keyframes skeleton {
     0% {
       background-position: -200px 0;
@@ -220,7 +254,7 @@
 
   .hover-lift:hover {
     @apply scale-105 shadow-lg;
-    box-shadow: 0 10px 25px rgba(200, 85, 255, 0.15);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
   }
 
   .hover-lift:active {
@@ -241,6 +275,6 @@
       rgba(255, 255, 255, 0.05) 75%
     );
     background-size: 200px 100%;
-    @apply animate-skeleton;
+    animation: skeleton 1.5s ease-in-out infinite;
   }
 }
