@@ -9,6 +9,7 @@ import { useWalletStore } from '@/lib/store/wallet';
 import { formatCurrency, generatePublicKey } from '@/lib/utils/format';
 import { toast } from '@/hooks/use-toast';
 import { t } from '@/lib/i18n';
+import { ENV_CONFIG } from '@/lib/config/env';
 
 export default function SuccessCallbackPage() {
   const router = useRouter();
@@ -31,7 +32,7 @@ export default function SuccessCallbackPage() {
   const handleReturnToApp = async () => {
     setIsProcessing(true);
 
-    if (!hasWallet) {
+    if (!hasWallet && ENV_CONFIG.ENABLE_DEMO) {
       // Generate wallet and pubkey
       const newPubkey = generatePublicKey();
       setPubkey(newPubkey);

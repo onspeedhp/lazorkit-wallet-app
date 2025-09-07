@@ -23,9 +23,9 @@ import {
 } from './ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useWalletStore } from '@/lib/store/wallet';
-import { reseedDemo } from '@/lib/demoSeed';
 import { setLanguage, getLanguage, t } from '@/lib/i18n';
 import { toast } from '@/hooks/use-toast';
+import { ENV_CONFIG } from '@/lib/config/env';
 
 export const SettingsTab = () => {
   const { fiat, setFiat, resetDemoData, setHasPasskey } = useWalletStore();
@@ -52,6 +52,14 @@ export const SettingsTab = () => {
   };
 
   const handleRegeneratePasskey = () => {
+    if (!ENV_CONFIG.ENABLE_DEMO) {
+      toast({
+        title: 'Demo mode disabled',
+        description: 'Passkey functionality is disabled in demo mode.',
+      });
+      return;
+    }
+
     setHasPasskey(false);
     setTimeout(() => {
       setHasPasskey(true);
@@ -70,10 +78,10 @@ export const SettingsTab = () => {
   };
 
   const handleResetDemoData = () => {
-    reseedDemo(minimalDemo);
+    resetDemoData();
     toast({
-      title: 'Reset & Reseeded',
-      description: minimalDemo ? 'Minimal demo dataset applied.' : 'Rich demo dataset applied.',
+      title: 'Demo data reset',
+      description: 'Demo data has been reset to initial state.',
     });
   };
 
@@ -205,7 +213,9 @@ export const SettingsTab = () => {
           <div className='flex items-center justify-between'>
             <div>
               <div className='font-medium'>Rich Demo Mode</div>
-              <div className='text-sm text-muted-foreground'>Toggle Minimal Data Mode</div>
+              <div className='text-sm text-muted-foreground'>
+                Toggle Minimal Data Mode
+              </div>
             </div>
             <Switch checked={minimalDemo} onCheckedChange={setMinimalDemo} />
           </div>

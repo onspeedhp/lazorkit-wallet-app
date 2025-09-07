@@ -5,12 +5,12 @@ export const formatCurrency = (
   currency: Fiat = 'USD'
 ): string => {
   if (currency === 'VND') {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND',
+    // Format VND with proper grouping (1,200,000 đ)
+    const formatted = new Intl.NumberFormat('vi-VN', {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
+    return `${formatted} đ`;
   }
 
   return new Intl.NumberFormat('en-US', {

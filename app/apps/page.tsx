@@ -8,7 +8,6 @@ import { AppCard } from '@/components/app-card';
 import { AppDetailModal } from '@/components/app-detail-modal';
 import { SearchBar } from '@/components/search-bar';
 import { FiltersBar } from '@/components/filters-bar';
-import { LayoutToggle } from '@/components/layout-toggle';
 import { Pagination } from '@/components/pagination';
 import { EmptyState } from '@/components/ui/empty-state';
 import { SkeletonList } from '@/components/ui/skeleton';
@@ -24,7 +23,6 @@ export default function AppsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [sortBy, setSortBy] = useState<string>('popularity');
-  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,14 +36,19 @@ export default function AppsPage() {
   }, []);
 
   // Filter and search apps
-  const filteredApps = apps.filter(app => {
-    const matchesSearch = app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         app.intro.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         app.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesCategory = selectedCategory === 'all' || app.category.toLowerCase() === selectedCategory;
+  const filteredApps = apps.filter((app) => {
+    const matchesSearch =
+      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.intro.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.tags.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    const matchesCategory =
+      selectedCategory === 'all' ||
+      app.category.toLowerCase() === selectedCategory;
     const matchesVerified = !verifiedOnly || app.verified;
-    
+
     return matchesSearch && matchesCategory && matchesVerified;
   });
 
@@ -75,41 +78,35 @@ export default function AppsPage() {
     setIsLoading(true);
     // Simulate loading delay
     setTimeout(() => {
-      setCurrentPage(prev => Math.min(prev + 1, totalPages));
+      setCurrentPage((prev) => Math.min(prev + 1, totalPages));
       setIsLoading(false);
     }, 1000);
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <AppHeader 
-          showMenu 
-          onMenuClick={() => setDrawerOpen(true)}
-        />
+    <div className='min-h-screen bg-background'>
+      <div className='sticky top-0 z-30 backdrop-blur supports-[backdrop-filter]:bg-background/70'>
+        <AppHeader showMenu onMenuClick={() => setDrawerOpen(true)} />
       </div>
-      
-      <DrawerNav 
-        open={drawerOpen} 
-        onOpenChange={setDrawerOpen} 
-      />
 
-      <main className="container mx-auto px-4 py-6 max-w-md">
-        <div className="space-y-6">
+      <DrawerNav open={drawerOpen} onOpenChange={setDrawerOpen} />
+
+      <main className='container mx-auto px-4 py-6 max-w-md'>
+        <div className='space-y-6'>
           {/* Header */}
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold">{t('apps.title')}</h1>
-            <p className="text-muted-foreground">{t('app.prototype')}</p>
+          <div className='text-center space-y-2'>
+            <h1 className='text-2xl font-bold'>{t('apps.title')}</h1>
+            <p className='text-muted-foreground'>{t('app.prototype')}</p>
           </div>
 
           {/* Search and Filters */}
-          <div className="space-y-4">
-            <SearchBar 
+          <div className='space-y-4'>
+            <SearchBar
               value={searchQuery}
               onChange={setSearchQuery}
               placeholder={t('apps.searchPlaceholder')}
             />
-            
+
             <FiltersBar
               category={selectedCategory}
               onCategoryChange={setSelectedCategory}
@@ -118,23 +115,18 @@ export default function AppsPage() {
               sortBy={sortBy}
               onSortChange={setSortBy}
             />
-            
-            <LayoutToggle
-              layout={layout}
-              onLayoutChange={setLayout}
-            />
           </div>
 
-          {/* Apps Grid/List */}
+          {/* Apps List */}
           {isLoading ? (
-            <SkeletonList count={layout === 'grid' ? 8 : 6} />
-          ) : paginatedApps.length > 0 ? (
-            <div className={layout === 'grid' ? 'grid grid-cols-2 gap-4' : 'space-y-4'}>
+            <SkeletonList count={6} />
+            ) : paginatedApps.length > 0 ? (
+             <div className='space-y-4'>
               {paginatedApps.map((app) => (
                 <AppCard
                   key={app.id}
                   app={app}
-                  layout={layout}
+                  layout='list'
                   onClick={() => handleAppClick(app)}
                 />
               ))}

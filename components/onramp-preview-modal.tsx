@@ -23,7 +23,12 @@ interface OnRampPreviewModalProps {
   onConfirm: () => Promise<void> | void;
 }
 
-export function OnRampPreviewModal({ open, onOpenChange, data, onConfirm }: OnRampPreviewModalProps) {
+export function OnRampPreviewModal({
+  open,
+  onOpenChange,
+  data,
+  onConfirm,
+}: OnRampPreviewModalProps) {
   const [submitting, setSubmitting] = useState(false);
 
   const breakdown = useMemo(() => {
@@ -47,49 +52,58 @@ export function OnRampPreviewModal({ open, onOpenChange, data, onConfirm }: OnRa
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className='sm:max-w-md max-h-[85vh] overflow-y-auto'>
         <DialogHeader>
           <DialogTitle>{t('onRamp.preview')}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className='space-y-4'>
           <Card>
-            <CardContent className="p-4 space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
+            <CardContent className='p-4 space-y-3'>
+              <div className='flex justify-between text-sm'>
+                <span className='text-muted-foreground'>Subtotal</span>
                 <span>{formatCurrency(breakdown.subtotal, 'USD')}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Fee</span>
+              <div className='flex justify-between text-sm'>
+                <span className='text-muted-foreground'>Fee</span>
                 <span>{formatCurrency(breakdown.fee, 'USD')}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Est. network fee</span>
+              <div className='flex justify-between text-sm'>
+                <span className='text-muted-foreground'>Est. network fee</span>
                 <span>{formatCurrency(breakdown.network, 'USD')}</span>
               </div>
-              <div className="h-px bg-border" />
-              <div className="flex justify-between font-semibold">
+              <div className='h-px bg-border' />
+              <div className='flex justify-between font-semibold'>
                 <span>{t('common.total')}</span>
                 <span>{formatCurrency(breakdown.total, 'USD')}</span>
               </div>
             </CardContent>
           </Card>
 
-          <div className="text-xs text-muted-foreground">
-            {data.paymentMethod === 'applepay' ? 'Apple Pay' : data.paymentMethod === 'vnpay' ? 'VNPay QR' : 'Card'} • Stripe-secured (demo)
+          <div className='text-xs text-muted-foreground'>
+            {data.paymentMethod === 'applepay'
+              ? 'Apple Pay'
+              : data.paymentMethod === 'vnpay'
+              ? 'VNPay QR'
+              : 'Card'}{' '}
+            • Stripe-secured (demo)
           </div>
 
-          <Button className="w-full" disabled={submitting} onClick={handleConfirm}>
+          <Button
+            className='w-full'
+            disabled={submitting}
+            onClick={handleConfirm}
+          >
             {submitting ? t('common.loading') : t('onRamp.confirmPay')}
           </Button>
 
-          <div className="text-center">
-            <p className="text-xs text-muted-foreground">Rates are simulated for demo.</p>
+          <div className='text-center'>
+            <p className='text-xs text-muted-foreground'>
+              Rates are simulated for demo.
+            </p>
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-
-

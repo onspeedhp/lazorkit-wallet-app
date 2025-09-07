@@ -12,9 +12,13 @@ import { t } from '@/lib/i18n';
 
 interface WalletBannerProps {
   onDepositClick?: () => void;
+  hideDeposit?: boolean;
 }
 
-export const WalletBanner = ({ onDepositClick }: WalletBannerProps) => {
+export const WalletBanner = ({
+  onDepositClick,
+  hideDeposit = false,
+}: WalletBannerProps) => {
   const { pubkey, tokens, fiat, rateUsdToVnd } = useWalletStore();
   const [showBalance, setShowBalance] = useState(true);
 
@@ -27,19 +31,17 @@ export const WalletBanner = ({ onDepositClick }: WalletBannerProps) => {
     fiat === 'VND' ? totalBalance * rateUsdToVnd : totalBalance;
 
   return (
-    <Card className='glass-card border-primary/20 hover:border-primary/40 transition-all duration-300'>
-      <CardContent className='p-6'>
-        <div className='space-y-6'>
+    <Card className='glass-card border-border/50 hover:border-primary/30 transition-all duration-300 relative overflow-hidden group hover:shadow-lg'>
+      <CardContent className='p-4'>
+        <div className='space-y-2'>
           {/* Public Key */}
           <div className='flex items-center justify-between'>
             <div className='flex items-center space-x-3'>
-              <div className='w-10 h-10 rounded overflow-hidden border border-primary/30 shadow-ambient'>
-                <Blockie seed={pubkey || 'demo'} size={8} scale={5} />
+              <div className='w-10 h-10 rounded-lg overflow-hidden border border-border/50 shadow-sm group-hover:shadow-md transition-all duration-300'>
+                <Blockie seed={pubkey || 'demo'} size={8} scale={4} />
               </div>
               <div>
-                <p className='text-sm text-muted-foreground'>
-                  {t('wallet.publicKey')}
-                </p>
+                <p className='text-sm text-muted-foreground'>Account ID</p>
                 <p className='font-mono text-sm font-medium'>
                   {pubkey ? formatAddress(pubkey) : 'Not available'}
                 </p>
@@ -50,24 +52,23 @@ export const WalletBanner = ({ onDepositClick }: WalletBannerProps) => {
 
           {/* Total Balance */}
           <div className='relative'>
-            <div className='absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-lg blur-sm'></div>
-            <div className='relative bg-card/50 rounded-lg p-4'>
+            <div className='relative bg-muted/30 rounded-xl p-4 group-hover:bg-muted/50 transition-all duration-300 border border-border/30'>
               <div className='flex items-center justify-between'>
-                <div>
-                  <p className='text-sm text-muted-foreground mb-1'>
+                <div className='flex-1'>
+                  <p className='text-xs text-muted-foreground mb-1'>
                     {t('wallet.totalBalance')}
                   </p>
                   <div className='flex items-center space-x-2'>
-                    <p className='text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
+                    <p className='text-2xl font-bold text-foreground min-w-[120px]'>
                       {showBalance
                         ? formatCurrency(displayBalance, fiat)
                         : '••••••'}
                     </p>
                     <Button
                       variant='ghost'
-                      size='sm'
+                      size='icon'
                       onClick={() => setShowBalance(!showBalance)}
-                      className='h-8 w-8 p-0 hover:bg-primary/10 transition-all duration-200'
+                      className='h-7 w-7 p-0 hover:bg-primary/10 transition-all duration-200'
                     >
                       {showBalance ? (
                         <EyeOff className='h-4 w-4' />
@@ -77,27 +78,22 @@ export const WalletBanner = ({ onDepositClick }: WalletBannerProps) => {
                     </Button>
                   </div>
                 </div>
-                <div className='text-right'>
-                  <div className='w-12 h-12 rounded-full gradient-accent flex items-center justify-center animate-pulse-glow'>
-                    <span className='text-white text-lg'>💰</span>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
 
           {/* Quick Actions */}
-          <div className='flex space-x-3'>
+          {!hideDeposit && (
             <Button
               variant='outline'
               size='sm'
-              className='flex-1 hover:bg-primary/10 hover:border-primary/50 transition-all duration-200'
+              className='w-full hover:bg-primary/10 hover:border-primary/50 transition-all duration-200'
               onClick={onDepositClick}
             >
               <Plus className='mr-2 h-4 w-4' />
               {t('wallet.deposit')}
             </Button>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

@@ -23,14 +23,15 @@ export const AppHeader = ({
     <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
       <div className='container flex h-16 max-w-screen-2xl items-center px-4'>
         <div className='flex items-center space-x-3'>
-          <div className='relative'>
-            <div className='w-8 h-8 rounded-lg gradient-primary flex items-center justify-center animate-pulse-glow'>
-              <span className='text-white font-bold text-sm'>L</span>
-            </div>
-            <div className='absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-bounce-gentle'></div>
+          <div className='w-8 h-8 rounded-lg border border-border/50 overflow-hidden'>
+            <img
+              src='/lazorkit-logo.jpg'
+              alt='LazorKit'
+              className='w-full h-full object-cover'
+            />
           </div>
-          <h1 className='text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent'>
-            {title || t('app.title')}
+          <h1 className='text-xl font-bold text-foreground'>
+            {title || 'LazorKit'}
           </h1>
         </div>
 
@@ -38,11 +39,11 @@ export const AppHeader = ({
           {shouldShowMenu && (
             <Button
               variant='ghost'
-              size='sm'
+              size='lg'
               onClick={onMenuClick}
-              className='h-10 w-10 p-0 hover:bg-primary/10 transition-all duration-200'
+              className='h-14 w-14 p-0 hover:bg-primary/10 transition-all duration-200 rounded-xl'
             >
-              <Menu className='h-5 w-5' />
+              <Menu className='size-6' />
               <span className='sr-only'>Open menu</span>
             </Button>
           )}

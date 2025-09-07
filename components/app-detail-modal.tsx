@@ -1,8 +1,9 @@
 'use client';
 
-import { ExternalLink, Star, Heart, Shield } from 'lucide-react';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { ExternalLink, Star, Heart, Shield, X } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Badge } from './ui/badge';
 import { AppCard as AppCardType } from '@/lib/store/wallet';
 import { t } from '@/lib/i18n';
@@ -13,11 +14,47 @@ interface AppDetailModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Function to get app image based on app name
+const getAppImage = (appName: string): string => {
+  const appImages: { [key: string]: string } = {
+    'Jupiter': 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg',
+    'SolPay Mini': 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg',
+    'RippleChat': 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg',
+    'MintMuse': 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg',
+    'Radiant Swap': 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg',
+  };
+  
+  return appImages[appName] || 'https://pbs.twimg.com/profile_images/1661738815890022410/F8y4vBky_400x400.jpg';
+};
+
 export const AppDetailModal = ({
   app,
   open,
   onOpenChange,
 }: AppDetailModalProps) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+    } else {
+      document.body.style.overflow = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
+      document.body.style.height = 'unset';
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = 'unset';
+      document.body.style.position = 'unset';
+      document.body.style.width = 'unset';
+      document.body.style.height = 'unset';
+    };
+  }, [open]);
+
   const handleOpenApp = () => {
     console.log('app_opened', { appId: app.id, appName: app.name });
     window.open(app.website, '_blank');
@@ -28,51 +65,227 @@ export const AppDetailModal = ({
     // In a real app, this would update the favorites list
   };
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='sm:max-w-md'>
-        <DialogHeader>
-          <DialogTitle className='flex items-center space-x-2'>
+  // Don't render anything if modal is closed
+  if (!open) return null;
+
+  const modalContent = (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 9999,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1rem',
+        boxSizing: 'border-box',
+      }}
+    >
+      {/* Backdrop */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backdropFilter: 'blur(4px)',
+        }}
+        onClick={() => onOpenChange(false)}
+      />
+
+      {/* Modal Content */}
+      <div
+        style={{
+          position: 'relative',
+          backgroundColor: 'var(--background)',
+          border: '1px solid var(--border)',
+          borderRadius: '0.5rem',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          width: '100%',
+          maxWidth: '28rem',
+          maxHeight: '80vh',
+          minHeight: 'auto',
+          overflowY: 'auto',
+          padding: '1.5rem',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Close Button */}
+        <button
+          onClick={() => onOpenChange(false)}
+          style={{
+            position: 'absolute',
+            top: '1rem',
+            right: '1rem',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '0.5rem',
+            borderRadius: '0.25rem',
+            opacity: 0.7,
+            transition: 'opacity 0.2s',
+            color: 'var(--foreground)',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.7')}
+        >
+          <X size={16} />
+        </button>
+
+        {/* Header */}
+        <div style={{ marginBottom: '1.5rem', paddingRight: '2rem' }}>
+          <h2
+            style={{
+              fontSize: '1.125rem',
+              fontWeight: '600',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: 'var(--foreground)',
+            }}
+          >
             <span>{app.name}</span>
             {app.verified && (
               <Star className='h-5 w-5 text-yellow-500 fill-current' />
             )}
-          </DialogTitle>
-        </DialogHeader>
+          </h2>
+        </div>
 
-        <div className='space-y-6'>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {/* App Banner */}
-          <div className='w-full h-32 bg-muted rounded-lg flex items-center justify-center'>
-            <ExternalLink className='h-12 w-12 text-muted-foreground' />
+          <div
+            style={{
+              width: '100%',
+              height: '6rem',
+              backgroundColor: 'var(--muted)',
+              borderRadius: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <img 
+              src={getAppImage(app.name)}
+              alt={app.name}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+              onError={(e) => {
+                // Fallback to icon if image fails to load
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = `
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--muted-foreground)">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                    <polyline points="15,3 21,3 21,9"></polyline>
+                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                  </svg>
+                `;
+              }}
+            />
           </div>
 
           {/* App Info */}
-          <div className='space-y-4'>
+          <div
+            style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}
+          >
             <div>
-              <h3 className='font-semibold mb-2'>{app.name}</h3>
-              <p className='text-muted-foreground text-sm leading-relaxed'>
+              <h3
+                style={{
+                  fontWeight: '600',
+                  marginBottom: '0.5rem',
+                  color: 'var(--foreground)',
+                }}
+              >
+                {app.name}
+              </h3>
+              <p
+                style={{
+                  color: 'var(--muted-foreground)',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.5',
+                }}
+              >
                 {app.intro}
               </p>
-              <div className='mt-2 text-xs text-muted-foreground flex items-center space-x-3'>
-                {typeof app.rating === 'number' && <span>★ {app.rating.toFixed(1)}</span>}
+              <div
+                style={{
+                  marginTop: '0.5rem',
+                  fontSize: '0.75rem',
+                  color: 'var(--muted-foreground)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}
+              >
+                {typeof app.rating === 'number' && (
+                  <span>★ {app.rating.toFixed(1)}</span>
+                )}
                 {app.installs && <span>{app.installs} installs</span>}
-                {app.updatedAt && <span>Updated {new Date(app.updatedAt).toLocaleDateString()}</span>}
+                {app.updatedAt && (
+                  <span>
+                    Updated {new Date(app.updatedAt).toLocaleDateString()}
+                  </span>
+                )}
                 {app.version && <span>v{app.version}</span>}
               </div>
             </div>
 
             {/* Category and Tags */}
-            <div className='space-y-3'>
-              <div className='flex items-center space-x-2'>
-                <span className='text-sm font-medium'>Category:</span>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+              }}
+            >
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'var(--foreground)',
+                  }}
+                >
+                  Category:
+                </span>
                 <Badge variant='outline'>{app.category}</Badge>
               </div>
 
-              <div className='space-y-2'>
-                <span className='text-sm font-medium'>Tags:</span>
-                <div className='flex flex-wrap gap-2'>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.5rem',
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'var(--foreground)',
+                  }}
+                >
+                  Tags:
+                </span>
+                <div
+                  style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}
+                >
                   {app.tags.map((tag, idx) => (
-                    <Badge key={`${app.id}-detail-tag-${idx}-${tag}`} variant='secondary' className='text-xs'>
+                    <Badge
+                      key={`${app.id}-detail-tag-${idx}-${tag}`}
+                      variant='secondary'
+                      style={{ fontSize: '0.75rem' }}
+                    >
                       {tag}
                     </Badge>
                   ))}
@@ -81,60 +294,130 @@ export const AppDetailModal = ({
             </div>
 
             {/* Permissions */}
-            <div className='space-y-2'>
-              <div className='flex items-center space-x-2'>
-                <Shield className='h-4 w-4 text-muted-foreground' />
-                <span className='text-sm font-medium'>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                <Shield
+                  size={16}
+                  style={{ color: 'var(--muted-foreground)' }}
+                />
+                <span
+                  style={{
+                    fontSize: '0.875rem',
+                    fontWeight: '500',
+                    color: 'var(--foreground)',
+                  }}
+                >
                   {t('apps.permissions')}
                 </span>
               </div>
-              <div className='space-y-1'>
-                <div className='text-sm text-muted-foreground'>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.25rem',
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--muted-foreground)',
+                  }}
+                >
                   • Read wallet balance
                 </div>
-                <div className='text-sm text-muted-foreground'>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--muted-foreground)',
+                  }}
+                >
                   • Request transactions
                 </div>
-                <div className='text-sm text-muted-foreground'>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--muted-foreground)',
+                  }}
+                >
                   • Access public key
                 </div>
               </div>
             </div>
 
             {/* Website Link */}
-            <div className='space-y-2'>
-              <span className='text-sm font-medium'>{t('apps.website')}</span>
-              <div className='flex items-center space-x-2'>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: 'var(--foreground)',
+                }}
+              >
+                {t('apps.website')}
+              </span>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
                 <a
                   href={app.website}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-sm text-primary hover:underline'
+                  style={{
+                    fontSize: '0.875rem',
+                    color: 'var(--primary)',
+                    textDecoration: 'none',
+                  }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.textDecoration = 'underline')
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.textDecoration = 'none')
+                  }
                 >
                   {app.website}
                 </a>
-                <ExternalLink className='h-3 w-3 text-muted-foreground' />
+                <ExternalLink
+                  size={12}
+                  style={{ color: 'var(--muted-foreground)' }}
+                />
               </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className='flex space-x-2'>
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
             <Button
               variant='outline'
               onClick={handleAddToFavorites}
-              className='flex-1'
+              style={{ flex: 1 }}
             >
-              <Heart className='mr-2 h-4 w-4' />
+              <Heart size={16} style={{ marginRight: '0.5rem' }} />
               {t('apps.addToFavorites')}
             </Button>
-            <Button onClick={handleOpenApp} className='flex-1'>
-              <ExternalLink className='mr-2 h-4 w-4' />
+            <Button onClick={handleOpenApp} style={{ flex: 1 }}>
+              <ExternalLink size={16} style={{ marginRight: '0.5rem' }} />
               {t('apps.openApp')}
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </div>
+    </div>
   );
+
+  // Render modal using portal to document.body
+  return createPortal(modalContent, document.body);
 };

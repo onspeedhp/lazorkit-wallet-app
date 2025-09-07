@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { CreditCard, Grid3X3, User, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
@@ -13,6 +13,7 @@ interface DrawerNavProps {
 
 export const DrawerNav = ({ open, onOpenChange }: DrawerNavProps) => {
   const router = useRouter();
+  const pathname = usePathname();
 
   const menuItems = [
     {
@@ -41,20 +42,38 @@ export const DrawerNav = ({ open, onOpenChange }: DrawerNavProps) => {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side='left' className='w-80'>
         <SheetHeader>
-          <SheetTitle className='text-left'>{t('app.title')}</SheetTitle>
+          <div className='flex items-center space-x-3'>
+            <div className='w-10 h-10 rounded-lg border border-border/50 overflow-hidden'>
+              <img
+                src='/lazorkit-logo.jpg'
+                alt='LazorKit'
+                className='w-full h-full object-cover'
+              />
+            </div>
+            <SheetTitle className='text-left text-xl font-bold'>
+              {t('app.title')}
+            </SheetTitle>
+          </div>
         </SheetHeader>
 
         <nav className='mt-8 space-y-2'>
           {menuItems.map((item) => {
             const Icon = item.icon;
+            const isActive = pathname === item.href;
             return (
               <Button
                 key={item.href}
                 variant='ghost'
-                className='w-full justify-start h-12 px-4'
+                className={`w-full justify-start h-12 px-4 transition-all duration-200 ${
+                  isActive
+                    ? 'bg-primary/10 text-primary border-l-4 border-primary font-semibold'
+                    : 'hover:bg-muted/50'
+                }`}
                 onClick={() => handleNavigation(item.href)}
               >
-                <Icon className='mr-3 h-5 w-5' />
+                <Icon
+                  className={`mr-3 h-5 w-5 ${isActive ? 'text-primary' : ''}`}
+                />
                 {item.label}
               </Button>
             );
