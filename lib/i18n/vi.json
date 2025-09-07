@@ -166,6 +166,11 @@
     "installs": "lượt cài đặt",
     "updated": "Cập nhật"
   },
+  "assets": {
+    "title": "Tài sản của bạn",
+    "tokens": "Token",
+    "recentActivity": "Hoạt động gần đây"
+  },
   "devices": {
     "title": "Thiết bị đã kết nối",
     "addDevice": "Thêm thiết bị",

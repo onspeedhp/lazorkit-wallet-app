@@ -64,7 +64,7 @@ export default function BuyPage() {
                 <h1 className='text-4xl font-black text-white mb-1'>
                   Buy USDC
                 </h1>
-                <p className='text-2xl font-bold text-purple-400 mb-4'>
+                <p className='text-2xl font-bold text-primary mb-4'>
                   Instantly & Secure
                 </p>
 
@@ -86,7 +86,7 @@ export default function BuyPage() {
                   </Badge>
                   <Badge
                     variant='outline'
-                    className='px-2.5 py-1 text-xs border-purple-400/30 text-purple-500 bg-purple-400/10 hover:bg-purple-400/20 transition-colors shadow-sm'
+                    className='px-2.5 py-1 text-xs border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-colors shadow-sm'
                   >
                     <Clock className='w-3 h-3 mr-1' />
                     Under 30 Seconds

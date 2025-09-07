@@ -13,11 +13,11 @@
   --popover: #1A1C23; /* bg-elev */
   --popover-foreground: #ECECF1;
   /* Brand - Purple Theme */
-  --primary: #8B5CF6; /* violet-500 - main purple */
+  --primary: #7857ff; /* logo purple - main purple */
   --primary-foreground: #FFFFFF;
-  --secondary: #A78BFA; /* violet-400 - lighter purple */
+  --secondary: #9B7AFF; /* lighter purple */
   --secondary-foreground: #0E0F12;
-  --accent: #C4B5FD; /* violet-300 - light purple accent */
+  --accent: #B89AFF; /* light purple accent */
   --accent-foreground: #0E0F12;
   /* Text & UI */
   --muted: #1A1C23;
@@ -27,11 +27,11 @@
   --destructive-foreground: #0E0F12;
   --border: #262834; /* borders */
   --input: #14151B;
-  --ring: #A78BFA; /* focus ring - purple */
+  --ring: #9B7AFF; /* focus ring - purple */
   /* Charts */
-  --chart-1: #8B5CF6;
-  --chart-2: #A78BFA;
-  --chart-3: #C4B5FD;
+  --chart-1: #7857ff;
+  --chart-2: #9B7AFF;
+  --chart-3: #B89AFF;
   --chart-4: #7C7D86;
   --chart-5: #A8A8B3;
   /* Radii */
@@ -39,17 +39,17 @@
   /* Sidebar */
   --sidebar: #14151B;
   --sidebar-foreground: #ECECF1;
-  --sidebar-primary: #8B5CF6;
+  --sidebar-primary: #7857ff;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #A78BFA;
+  --sidebar-accent: #9B7AFF;
   --sidebar-accent-foreground: #0E0F12;
   --sidebar-border: #262834;
-  --sidebar-ring: #A78BFA;
+  --sidebar-ring: #9B7AFF;
 
   /* Gradients - Purple Theme */
-  --gradient-primary: linear-gradient(135deg, #8B5CF6, #7C3AED);
-  --gradient-secondary: linear-gradient(135deg, #A78BFA, #8B5CF6);
-  --gradient-accent: linear-gradient(135deg, #C4B5FD, #A78BFA);
+  --gradient-primary: linear-gradient(135deg, #7857ff, #6B4CE6);
+  --gradient-secondary: linear-gradient(135deg, #9B7AFF, #7857ff);
+  --gradient-accent: linear-gradient(135deg, #B89AFF, #9B7AFF);
   --gradient-card: linear-gradient(135deg, rgba(20,21,27,0.9), rgba(26,28,35,0.8));
 }
 
@@ -203,10 +203,10 @@
   @keyframes pulseGlow {
     0%,
     100% {
-      box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+      box-shadow: 0 0 20px rgba(120, 87, 255, 0.3);
     }
     50% {
-      box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
+      box-shadow: 0 0 30px rgba(120, 87, 255, 0.5);
     }
   }
 
@@ -286,7 +286,7 @@
   .app-card-hover:hover {
     @apply brightness-110;
     box-shadow: 
-      0 20px 40px rgba(139, 92, 246, 0.15),
+      0 20px 40px rgba(120, 87, 255, 0.15),
       0 8px 16px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
@@ -346,9 +346,9 @@
 
   .glass-card-enhanced:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    border: 1px solid rgba(120, 87, 255, 0.3);
     box-shadow: 
-      0 20px 40px rgba(139, 92, 246, 0.2),
+      0 20px 40px rgba(120, 87, 255, 0.2),
       0 8px 16px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
@@ -356,11 +356,11 @@
   /* Purple glow effect for swap/buy card */
   .swap-buy-glow {
     box-shadow: 
-      0 0 30px rgba(139, 92, 246, 0.15),
-      0 0 60px rgba(139, 92, 246, 0.08),
-      0 0 90px rgba(139, 92, 246, 0.05),
+      0 0 30px rgba(120, 87, 255, 0.15),
+      0 0 60px rgba(120, 87, 255, 0.08),
+      0 0 90px rgba(120, 87, 255, 0.05),
       0 4px 16px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(120, 87, 255, 0.15);
   }
 
 }

@@ -284,6 +284,7 @@ export const AppDetailModal = ({
                     <Badge
                       key={`${app.id}-detail-tag-${idx}-${tag}`}
                       variant='secondary'
+                      className='bg-primary text-white border-primary'
                       style={{ fontSize: '0.75rem' }}
                     >
                       {tag}

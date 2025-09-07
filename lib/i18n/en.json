@@ -166,6 +166,11 @@
     "installs": "installs",
     "updated": "Updated"
   },
+  "assets": {
+    "title": "Your Assets",
+    "tokens": "Tokens",
+    "recentActivity": "Recent Activity"
+  },
   "devices": {
     "title": "Connected Devices",
     "addDevice": "Add Device",

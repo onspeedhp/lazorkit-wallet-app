@@ -86,169 +86,184 @@ export const SettingsTab = () => {
   };
 
   return (
-    <div className='space-y-6'>
+    <div className='space-y-4'>
       {/* Wallet Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
-            <Settings className='h-5 w-5' />
-            <span>Wallet</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='walletName'>{t('settings.walletName')}</Label>
-            <Input
-              id='walletName'
-              value={walletName}
-              onChange={(e) => setWalletName(e.target.value)}
-            />
+      <Card className='glass-card'>
+        <CardContent className='p-4'>
+          <div className='space-y-3'>
+            <div className='flex items-center space-x-2 mb-3'>
+              <Settings className='h-4 w-4 text-primary' />
+              <span className='font-semibold text-sm'>Wallet</span>
+            </div>
+            <div className='space-y-2'>
+              <Label htmlFor='walletName' className='text-sm'>{t('settings.walletName')}</Label>
+              <Input
+                id='walletName'
+                value={walletName}
+                onChange={(e) => setWalletName(e.target.value)}
+                className='h-9'
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
-            <Globe className='h-5 w-5' />
-            <span>Preferences</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='space-y-2'>
-            <Label>{t('settings.language')}</Label>
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='en'>{t('settings.languages.en')}</SelectItem>
-                <SelectItem value='vi'>{t('settings.languages.vi')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <Card className='glass-card'>
+        <CardContent className='p-4'>
+          <div className='space-y-4'>
+            <div className='flex items-center space-x-2 mb-3'>
+              <Globe className='h-4 w-4 text-primary' />
+              <span className='font-semibold text-sm'>Preferences</span>
+            </div>
+            
+            <div className='grid grid-cols-1 gap-3'>
+              <div className='space-y-1'>
+                <Label className='text-sm'>{t('settings.language')}</Label>
+                <Select value={language} onValueChange={handleLanguageChange}>
+                  <SelectTrigger className='h-9'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='en'>{t('settings.languages.en')}</SelectItem>
+                    <SelectItem value='vi'>{t('settings.languages.vi')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className='space-y-2'>
-            <Label>{t('settings.theme')}</Label>
-            <Select value={theme} onValueChange={handleThemeChange}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='dark'>
-                  {t('settings.themes.dark')}
-                </SelectItem>
-                <SelectItem value='light'>
-                  {t('settings.themes.light')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+              <div className='space-y-1'>
+                <Label className='text-sm'>{t('settings.theme')}</Label>
+                <Select value={theme} onValueChange={handleThemeChange}>
+                  <SelectTrigger className='h-9'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='dark'>
+                      {t('settings.themes.dark')}
+                    </SelectItem>
+                    <SelectItem value='light'>
+                      {t('settings.themes.light')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className='space-y-2'>
-            <Label>{t('settings.currency')}</Label>
-            <Select value={fiat} onValueChange={handleCurrencyChange}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value='USD'>
-                  {t('settings.currencies.usd')}
-                </SelectItem>
-                <SelectItem value='VND'>
-                  {t('settings.currencies.vnd')}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+              <div className='space-y-1'>
+                <Label className='text-sm'>{t('settings.currency')}</Label>
+                <Select value={fiat} onValueChange={handleCurrencyChange}>
+                  <SelectTrigger className='h-9'>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value='USD'>
+                      {t('settings.currencies.usd')}
+                    </SelectItem>
+                    <SelectItem value='VND'>
+                      {t('settings.currencies.vnd')}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Backup & Security */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
-            <Shield className='h-5 w-5' />
-            <span>{t('settings.backupSecurity')}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div>
-              <div className='font-medium'>{t('settings.passkeyStatus')}</div>
-              <div className='text-sm text-muted-foreground'>
-                {t('settings.created')}
+      {/* Security */}
+      <Card className='glass-card'>
+        <CardContent className='p-4'>
+          <div className='space-y-4'>
+            <div className='flex items-center space-x-2 mb-3'>
+              <Shield className='h-4 w-4 text-primary' />
+              <span className='font-semibold text-sm'>{t('settings.backupSecurity')}</span>
+            </div>
+            
+            <div className='space-y-3'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <div className='font-medium text-sm'>{t('settings.passkeyStatus')}</div>
+                  <div className='text-xs text-muted-foreground'>
+                    {t('settings.created')}
+                  </div>
+                </div>
+                <Switch
+                  checked={passkeyEnabled}
+                  onCheckedChange={setPasskeyEnabled}
+                />
+              </div>
+
+              <div className='grid grid-cols-1 gap-2'>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={handleRegeneratePasskey}
+                  className='h-8 text-xs'
+                >
+                  {t('settings.regeneratePasskey')}
+                </Button>
+                <Button variant='outline' size='sm' className='h-8 text-xs'>
+                  {t('settings.exportPublicKey')}
+                </Button>
               </div>
             </div>
-            <Switch
-              checked={passkeyEnabled}
-              onCheckedChange={setPasskeyEnabled}
-            />
           </div>
-
-          <Button
-            variant='outline'
-            onClick={handleRegeneratePasskey}
-            className='w-full'
-          >
-            {t('settings.regeneratePasskey')}
-          </Button>
-
-          <Button variant='outline' className='w-full'>
-            {t('settings.exportPublicKey')}
-          </Button>
         </CardContent>
       </Card>
 
       {/* Advanced */}
-      <Card>
-        <CardHeader>
-          <CardTitle className='flex items-center space-x-2'>
-            <Zap className='h-5 w-5' />
-            <span>{t('settings.advanced')}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div className='flex items-center justify-between'>
-            <div>
-              <div className='font-medium'>Rich Demo Mode</div>
-              <div className='text-sm text-muted-foreground'>
-                Toggle Minimal Data Mode
-              </div>
+      <Card className='glass-card'>
+        <CardContent className='p-4'>
+          <div className='space-y-4'>
+            <div className='flex items-center space-x-2 mb-3'>
+              <Zap className='h-4 w-4 text-primary' />
+              <span className='font-semibold text-sm'>{t('settings.advanced')}</span>
             </div>
-            <Switch checked={minimalDemo} onCheckedChange={setMinimalDemo} />
+            
+            <div className='space-y-3'>
+              <div className='flex items-center justify-between'>
+                <div>
+                  <div className='font-medium text-sm'>Rich Demo Mode</div>
+                  <div className='text-xs text-muted-foreground'>
+                    Toggle Minimal Data Mode
+                  </div>
+                </div>
+                <Switch checked={minimalDemo} onCheckedChange={setMinimalDemo} />
+              </div>
+              <Button
+                variant='outline'
+                size='sm'
+                onClick={handleRequestAirdrop}
+                className='w-full h-8 text-xs'
+              >
+                {t('settings.requestTestnetAirdrop')}
+              </Button>
+            </div>
           </div>
-          <Button
-            variant='outline'
-            onClick={handleRequestAirdrop}
-            className='w-full'
-          >
-            {t('settings.requestTestnetAirdrop')}
-          </Button>
         </CardContent>
       </Card>
 
       {/* Danger Zone */}
-      <Card className='border-destructive'>
-        <CardHeader>
-          <CardTitle className='flex items-center space-x-2 text-destructive'>
-            <Trash2 className='h-5 w-5' />
-            <span>{t('settings.dangerZone')}</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className='space-y-2'>
-            <p className='text-sm text-muted-foreground'>
-              {t('settings.confirmReset')}
-            </p>
-            <Button
-              variant='destructive'
-              onClick={handleResetDemoData}
-              className='w-full'
-            >
-              {t('settings.resetDemoData')}
-            </Button>
+      <Card className='glass-card border-destructive/50'>
+        <CardContent className='p-4'>
+          <div className='space-y-3'>
+            <div className='flex items-center space-x-2 mb-3'>
+              <Trash2 className='h-4 w-4 text-destructive' />
+              <span className='font-semibold text-sm text-destructive'>{t('settings.dangerZone')}</span>
+            </div>
+            
+            <div className='space-y-2'>
+              <p className='text-xs text-muted-foreground'>
+                {t('settings.confirmReset')}
+              </p>
+              <Button
+                variant='destructive'
+                size='sm'
+                onClick={handleResetDemoData}
+                className='w-full h-8 text-xs'
+              >
+                {t('settings.resetDemoData')}
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

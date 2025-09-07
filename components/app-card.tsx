@@ -99,7 +99,7 @@ export const AppCard = ({ app, layout, onClick }: AppCardProps) => {
                   <Badge
                     key={`${app.id}-tag-${idx}-${tag}`}
                     variant='secondary'
-                    className='text-[10px] bg-primary/15 text-primary border-primary/30 px-1.5 py-0.5'
+                    className='text-[10px] bg-primary text-white border-primary px-1.5 py-0.5'
                   >
                     {tag}
                   </Badge>
