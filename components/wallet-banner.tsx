@@ -1,12 +1,13 @@
 'use client';
 
 import { Eye, EyeOff, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { CopyButton } from './ui/copy-button';
 import { Blockie } from './ui/blockie';
 import { useWalletStore } from '@/lib/store/wallet';
+import { fetchCommonTokens, JupiterToken } from '@/lib/services/jupiter';
 import { formatAddress, formatCurrency } from '@/lib/utils/format';
 import { t } from '@/lib/i18n';
 
@@ -19,13 +20,40 @@ export const WalletBanner = ({
   onDepositClick,
   hideDeposit = false,
 }: WalletBannerProps) => {
-  const { pubkey, tokens, fiat, rateUsdToVnd } = useWalletStore();
+  const { pubkey, fiat, rateUsdToVnd, tokens, hasNoAssets } = useWalletStore();
   const [showBalance, setShowBalance] = useState(true);
+  const [tokenData, setTokenData] = useState<Map<string, JupiterToken>>(new Map());
+  const [loadingPrices, setLoadingPrices] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
-  const totalBalance = tokens.reduce((sum, token) => {
-    const value = token.amount * token.priceUsd;
-    return sum + value;
-  }, 0);
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      try {
+        setLoadingPrices(true);
+        setLoadError(null);
+        const data = await fetchCommonTokens();
+        if (mounted) setTokenData(data);
+      } catch (e) {
+        if (mounted) setLoadError('failed');
+      } finally {
+        if (mounted) setLoadingPrices(false);
+      }
+    };
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const totalBalance = useMemo(() => {
+    if (!tokens || tokens.length === 0) return 0;
+    return tokens.reduce((sum, tk) => {
+      const j = tokenData.get(tk.symbol);
+      const price = j?.usdPrice ?? tk.priceUsd ?? 0;
+      return sum + tk.amount * price;
+    }, 0);
+  }, [tokens, tokenData]);
 
   const displayBalance =
     fiat === 'VND' ? totalBalance * rateUsdToVnd : totalBalance;
@@ -41,9 +69,9 @@ export const WalletBanner = ({
                 <Blockie seed={pubkey || 'demo'} size={8} scale={4} />
               </div>
               <div>
-                <p className='text-sm text-muted-foreground'>Account ID</p>
+                <p className='text-sm text-muted-foreground'>{t('wallet.publicKey')}</p>
                 <p className='font-mono text-sm font-medium'>
-                  {pubkey ? formatAddress(pubkey) : 'Not available'}
+                  {pubkey ? formatAddress(pubkey) : t('common.notAvailable')}
                 </p>
               </div>
             </div>
@@ -61,9 +89,14 @@ export const WalletBanner = ({
                   <div className='flex items-center space-x-2'>
                     <p className='text-2xl font-bold text-foreground min-w-[120px]'>
                       {showBalance
-                        ? formatCurrency(displayBalance, fiat)
+                        ? (loadingPrices && totalBalance === 0
+                          ? '—'
+                          : formatCurrency(displayBalance, fiat))
                         : '••••••'}
                     </p>
+                    {!hideDeposit && hasNoAssets && hasNoAssets() && (
+                      <span className='text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/30'>New</span>
+                    )}
                     <Button
                       variant='ghost'
                       size='icon'

@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Card } from './ui/card';
 import { useWalletStore, TokenSym } from '@/lib/store/wallet';
-import { formatTokenAmount } from '@/lib/utils/format';
+import { formatTokenAmount, formatCurrency } from '@/lib/utils/format';
 import { t } from '@/lib/i18n';
 import { SwapReviewModal } from './swap-review-modal';
 import { toast } from '@/hooks/use-toast';
@@ -45,7 +45,7 @@ export const SwapForm = ({
   tokenData,
   className,
 }: SwapFormProps) => {
-  const { tokens } = useWalletStore();
+  const { tokens, fiat, rateUsdToVnd } = useWalletStore();
   const [fromToken, setFromToken] = useState<TokenSym>('USDC');
   const [toToken, setToToken] = useState<TokenSym>('SOL');
   const [amount, setAmount] = useState('');
@@ -208,7 +208,7 @@ export const SwapForm = ({
               {/* Left side - Label and selector */}
               <div>
                 <div className='text-xs text-muted-foreground mb-2'>
-                  Selling
+                  {t('swap.from')}
                 </div>
                 <button
                   onClick={() => setShowTokenSelect('from')}
@@ -258,7 +258,7 @@ export const SwapForm = ({
                   className='text-2xl font-semibold bg-transparent border-0 p-0 h-auto text-right focus-visible:ring-0 placeholder:text-muted-foreground/30 text-foreground'
                 />
                 <div className='text-xs text-muted-foreground mt-0.5'>
-                  ${amountUsd.toFixed(2)}
+                  {formatCurrency(amountUsd, 'USD')}
                 </div>
               </div>
             </div>
@@ -279,7 +279,7 @@ export const SwapForm = ({
             <div className='flex items-start justify-between'>
               {/* Left side - Label and selector */}
               <div>
-                <div className='text-xs text-muted-foreground mb-2'>Buying</div>
+                <div className='text-xs text-muted-foreground mb-2'>{t('swap.to')}</div>
                 <button
                   onClick={() => setShowTokenSelect('to')}
                   className='flex items-center gap-1.5 px-3 py-2 rounded-full bg-card hover:bg-muted/20 transition-colors border border-border/50'
@@ -307,7 +307,7 @@ export const SwapForm = ({
                     : '0.00'}
                 </div>
                 <div className='text-xs text-muted-foreground mt-0.5'>
-                  ${(estimatedReceive * toPrice).toFixed(2)}
+                  {formatCurrency(estimatedReceive * toPrice, 'USD')}
                 </div>
               </div>
             </div>
@@ -316,7 +316,7 @@ export const SwapForm = ({
 
         {/* Slippage Settings */}
         <div className='mt-2.5 mb-2.5'>
-          <div className='text-xs text-muted-foreground mb-1'>Slippage</div>
+          <div className='text-xs text-muted-foreground mb-1'>{t('swap.slippage')}</div>
           <div className='flex gap-1'>
             {[0.1, 0.5, 1, 2].map((value) => (
               <button
@@ -344,7 +344,7 @@ export const SwapForm = ({
           }`}
           disabled={!amount || !!error || amountNum <= 0}
         >
-          {error || (!amount ? 'Enter an amount' : 'Swap')}
+          {error || (!amount ? t('swap.enterAmount') : t('swap.confirm'))}
         </Button>
 
         {/* Token Prices Footer - Individual borders */}
@@ -359,7 +359,7 @@ export const SwapForm = ({
               </div>
             </div>
             <div className='text-right'>
-              <div className='text-xs font-medium'>${fromPrice.toFixed(6)}</div>
+              <div className='text-xs font-medium'>{formatCurrency(fromPrice, 'USD')}</div>
               <div className='text-[10px] text-destructive'>0%</div>
             </div>
           </div>
@@ -374,7 +374,7 @@ export const SwapForm = ({
               </div>
             </div>
             <div className='text-right'>
-              <div className='text-xs font-medium'>${toPrice.toFixed(2)}</div>
+              <div className='text-xs font-medium'>{formatCurrency(toPrice, 'USD')}</div>
               <div className='text-[10px] text-destructive'>-0.69%</div>
             </div>
           </div>
@@ -392,7 +392,7 @@ export const SwapForm = ({
             onClick={(e) => e.stopPropagation()}
           >
             <div className='p-3 border-b'>
-              <h3 className='font-semibold text-sm'>Select Token</h3>
+              <h3 className='font-semibold text-sm'>{t('swap.selectToken')}</h3>
             </div>
             <div className='overflow-y-auto max-h-[60vh] p-2'>
               {availableTokens.map((tokenSymbol) => {
@@ -448,7 +448,7 @@ export const SwapForm = ({
                         {formatTokenAmount(token.amount, token.symbol)}
                       </div>
                       <div className='text-xs text-muted-foreground'>
-                        ${(token.amount * token.priceUsd).toFixed(2)}
+                        {formatCurrency(token.amount * token.priceUsd, 'USD')}
                       </div>
                     </div>
                   </button>

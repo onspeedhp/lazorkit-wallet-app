@@ -181,7 +181,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
       <div className='p-4 pt-3'>
         {/* Header - Compact */}
         <div className='flex items-center justify-between mb-2'>
-          <div className='text-sm font-medium'>Buy Crypto</div>
+          <div className='text-sm font-medium'>{t('onRamp.title')}</div>
           <button className='p-1.5 rounded-lg hover:bg-muted/50 transition-colors'>
             <Settings2 className='h-3.5 w-3.5 text-muted-foreground' />
           </button>
@@ -194,7 +194,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
             <div className='flex items-start justify-between'>
               {/* Left side - Label and selector */}
               <div>
-                <div className='text-xs text-muted-foreground mb-2'>Paying</div>
+                <div className='text-xs text-muted-foreground mb-2'>{t('onRamp.paying')}</div>
                 <button
                   onClick={() => setShowCurrencySelect(true)}
                   className='flex items-center gap-1.5 px-3 p-1 rounded-full bg-card hover:bg-muted/20 transition-colors border border-border/50'
@@ -211,8 +211,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
               <div className='flex-1 ml-3 text-right'>
                 <div className='mb-1'>
                   <span className='text-xs text-muted-foreground'>
-                    Min {fromCurrency === 'VND' ? '540,000 ₫' : '$20'} • Max{' '}
-                    {fromCurrency === 'VND' ? '13,500,000 ₫' : '$500'}
+                    {fromCurrency === 'VND' ? 'Tối thiểu 540,000 ₫ • Tối đa 13,500,000 ₫' : `${t('onRamp.minAmount')} • ${t('onRamp.maxAmount')}`}
                   </span>
                 </div>
                 <Input
@@ -238,7 +237,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
               {/* Left side - Label and selector */}
               <div>
                 <div className='text-xs text-muted-foreground mb-2'>
-                  Receiving
+                  {t('onRamp.receiving')}
                 </div>
                 <button
                   onClick={() => setShowTokenSelect(true)}
@@ -256,7 +255,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
               <div className='flex-1 ml-3 text-right'>
                 <div className='mb-1'>
                   <span className='text-xs text-muted-foreground'>
-                    1 {toToken} = ${tokenPrice?.toFixed(4) || '1.00'}
+                    {t('common.price')}: 1 {toToken} = ${tokenPrice?.toFixed(4) || '1.00'}
                   </span>
                 </div>
                 <div className='text-2xl font-semibold text-muted-foreground/50'>
@@ -274,7 +273,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
 
         {/* Quick Amount Selection */}
         <div className='mt-2.5 mb-2.5'>
-          <div className='text-xs text-muted-foreground mb-1'>Quick Amount</div>
+          <div className='text-xs text-muted-foreground mb-1'>{t('onRamp.quickAmount')}</div>
           <div className='flex gap-1'>
             {quickAmounts.map((usdAmount) => {
               // Check if this quick amount is selected
@@ -301,7 +300,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
           </div>
           {fromCurrency === 'VND' && (
             <div className='text-[10px] text-muted-foreground text-center mt-1'>
-              Amounts in USD, converted to VND at 1:27,000
+              {t('onRamp.usdConvertedHint')}
             </div>
           )}
         </div>
@@ -309,7 +308,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
         {/* Payment Method */}
         <div className='mb-2.5'>
           <div className='text-xs text-muted-foreground mb-1'>
-            Payment Method
+            {t('onRamp.paymentMethod')}
           </div>
           <div className='flex gap-1'>
             {paymentMethods.map((method) => (
@@ -323,7 +322,9 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
                 }`}
               >
                 <span className='text-base'>{method.icon}</span>
-                <span className='text-xs font-medium'>{method.label}</span>
+                <span className='text-xs font-medium'>{
+                  method.value === 'card' ? t('onRamp.card') : method.value === 'applepay' ? t('onRamp.applePay') : t('onRamp.vnpay')
+                }</span>
               </button>
             ))}
           </div>
@@ -339,13 +340,13 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
           }`}
           disabled={!amount || !!error || amountNum <= 0}
         >
-          {error || (!amount ? 'Enter an amount' : 'Continue')}
+          {error || (!amount ? t('onRamp.enterAmount') : t('common.next'))}
         </Button>
 
         {/* Exchange Rate Info */}
         <div className='text-center mt-2.5'>
           <div className='text-[10px] text-muted-foreground'>
-            Exchange Rate: 1 USD = 27,000 VND
+            {t('onRamp.exchangeRate')}: 1 USD = 27,000 VND
           </div>
         </div>
       </div>
@@ -361,7 +362,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className='p-3 border-b'>
-              <h3 className='font-semibold text-sm'>Select Currency</h3>
+              <h3 className='font-semibold text-sm'>{t('onRamp.selectCurrency')}</h3>
             </div>
             <div className='p-2'>
               {(['VND', 'USD'] as Fiat[]).map((currency) => (
@@ -401,7 +402,7 @@ export const OnRampForm = ({ onPreview, tokenData }: OnRampFormProps) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className='p-3 border-b'>
-              <h3 className='font-semibold text-sm'>Select Token</h3>
+              <h3 className='font-semibold text-sm'>{t('onRamp.selectToken')}</h3>
             </div>
             <div className='p-2'>
               {(['USDC', 'USDT'] as TokenSym[]).map((token) => {

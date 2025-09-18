@@ -4,6 +4,7 @@ export const formatCurrency = (
   amount: number,
   currency: Fiat = 'USD'
 ): string => {
+  if (!isFinite(amount)) return currency === 'USD' ? '$0.00' : '0 đ';
   if (currency === 'VND') {
     // Format VND with proper grouping (1,200,000 đ)
     const formatted = new Intl.NumberFormat('vi-VN', {
@@ -21,6 +22,17 @@ export const formatCurrency = (
   }).format(amount);
 };
 
+// Compact currency for UI chips (e.g., $1.2K, $3.4M)
+export const formatCurrencyCompact = (amount: number, currency: Fiat = 'USD'): string => {
+  if (!isFinite(amount)) return currency === 'USD' ? '$0' : '0 đ';
+  if (currency === 'VND') {
+    const formatter = new Intl.NumberFormat('vi-VN', { notation: 'compact', maximumFractionDigits: 1 });
+    return `${formatter.format(amount)} đ`;
+  }
+  const formatter = new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 1 });
+  return `$${formatter.format(amount)}$`[0] === '$' ? `$${formatter.format(amount)}` : formatter.format(amount);
+};
+
 export const formatNumber = (num: number, decimals: number = 2): string => {
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: decimals,
@@ -29,13 +41,20 @@ export const formatNumber = (num: number, decimals: number = 2): string => {
 };
 
 export const formatTokenAmount = (amount: number, symbol: TokenSym): string => {
-  const decimals = symbol === 'BONK' ? 0 : 4;
+  const decimals = symbol === 'BONK' ? 0 : amount < 1 ? 4 : 2;
   return `${formatNumber(amount, decimals)} ${symbol}`;
 };
 
 export const formatPercentage = (value: number): string => {
   const sign = value >= 0 ? '+' : '';
   return `${sign}${value.toFixed(2)}%`;
+};
+
+// Represents very small values without showing 0.00
+export const formatTiny = (value: number, threshold: number = 0.0001): string => {
+  if (!isFinite(value) || value === 0) return '0';
+  if (Math.abs(value) < threshold) return `<${threshold}`;
+  return value.toString();
 };
 
 export const formatAddress = (

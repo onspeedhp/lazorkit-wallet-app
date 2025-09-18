@@ -19,16 +19,10 @@ export const setLanguage = (lang: Language) => {
 };
 
 export const getLanguage = (): Language => {
-  if (typeof window !== 'undefined') {
-    const stored = localStorage.getItem('lazorkit-language') as Language;
-    if (stored && (stored === 'en' || stored === 'vi')) {
-      currentLanguage = stored;
-    }
-  }
   return currentLanguage;
 };
 
-export const t = (key: TranslationKey): string => {
+export const t = (key: TranslationKey, params?: Record<string, string | number>): string => {
   const keys = key.split('.');
   let value: any = translations[currentLanguage];
 
@@ -49,10 +43,17 @@ export const t = (key: TranslationKey): string => {
     }
   }
 
-  return typeof value === 'string' ? value : key;
+  if (typeof value !== 'string') return key;
+
+  // Simple mustache-style interpolation: {{param}}
+  if (params) {
+    return value.replace(/{{\s*(\w+)\s*}}/g, (_match, p1) => {
+      const v = params[p1 as keyof typeof params];
+      return v !== undefined && v !== null ? String(v) : '';
+    });
+  }
+  return value;
 };
 
-// Initialize language from localStorage on client side
-if (typeof window !== 'undefined') {
-  getLanguage();
-}
+// Note: Avoid auto-initializing from localStorage at module load time to prevent
+// SSR/CSR hydration mismatches. Use setLanguage() explicitly when user changes language.

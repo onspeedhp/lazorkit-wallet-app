@@ -38,6 +38,16 @@ export interface WalletState {
   devices: Device[];
   apps: AppCard[];
   activity: Activity[];
+  // Derived selectors (stable lambdas preferred in components)
+  getTokenAmount?: (symbol: TokenSym) => number;
+  getPortfolioValueUsd?: () => number;
+  hasAssets?: () => boolean;
+  hasNoAssets?: () => boolean;
+  getNumTokens?: () => number;
+  getNumNonZeroTokens?: () => number;
+  getTokenValueUsd?: (symbol: TokenSym) => number;
+  getEffectivePriceUsd?: (symbol: TokenSym) => number;
+  getVisibleTokens?: (hideZero: boolean) => TokenHolding[];
 
   // Mutators
   setHasPasskey: (hasPasskey: boolean) => void;
@@ -115,6 +125,47 @@ export const useWalletStore = create<WalletState>()(
         devices: initialData.devices,
         apps: initialData.apps,
         activity: initialData.activity,
+
+        // Derived selectors
+        getTokenAmount: (symbol: TokenSym) => {
+          const state = get();
+          const found = state.tokens.find((t) => t.symbol === symbol);
+          return found ? found.amount : 0;
+        },
+        getPortfolioValueUsd: () => {
+          const state = get();
+          return state.tokens.reduce((sum, token) => sum + token.amount * token.priceUsd, 0);
+        },
+        hasAssets: () => {
+          const state = get();
+          return state.tokens.some((t) => t.amount > 0);
+        },
+        hasNoAssets: () => {
+          const state = get();
+          return !state.tokens.some((t) => t.amount > 0);
+        },
+        getNumTokens: () => {
+          const state = get();
+          return state.tokens.length;
+        },
+        getNumNonZeroTokens: () => {
+          const state = get();
+          return state.tokens.filter((t) => t.amount > 0).length;
+        },
+        getTokenValueUsd: (symbol: TokenSym) => {
+          const state = get();
+          const found = state.tokens.find((t) => t.symbol === symbol);
+          return found ? found.amount * found.priceUsd : 0;
+        },
+        getEffectivePriceUsd: (symbol: TokenSym) => {
+          const state = get();
+          const found = state.tokens.find((t) => t.symbol === symbol);
+          return found ? found.priceUsd : 0;
+        },
+        getVisibleTokens: (hideZero: boolean) => {
+          const state = get();
+          return hideZero ? state.tokens.filter((t) => t.amount > 0) : state.tokens;
+        },
 
         setHasPasskey: (hasPasskey) => set({ hasPasskey }),
         setHasWallet: (hasWallet) => set({ hasWallet }),

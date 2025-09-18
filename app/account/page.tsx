@@ -55,10 +55,10 @@ export default function AccountPage() {
                       </div>
                       <div>
                         <p className='text-sm text-muted-foreground'>
-                          Account ID
+                          {t('wallet.publicKey')}
                         </p>
                         <p className='font-mono text-sm font-medium'>
-                          {pubkey ? formatAddress(pubkey) : 'Not available'}
+                          {pubkey ? formatAddress(pubkey) : t('common.notAvailable')}
                         </p>
                       </div>
                     </div>

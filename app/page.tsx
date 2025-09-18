@@ -10,17 +10,23 @@ export default function Home() {
   const { hasPasskey, hasWallet } = useWalletStore();
 
   useEffect(() => {
-    // Smart routing based on wallet state
     if (hasWallet) {
       router.push('/buy');
     }
   }, [hasWallet, router]);
 
-  // Show On-Ramp screen if no wallet exists
-  if (!hasPasskey || !hasWallet) {
+  // 3 trạng thái:
+  // 1) Chưa có gì: !hasPasskey && !hasWallet
+  // 2) Có Passkey chưa có ví: hasPasskey && !hasWallet
+  // 3) Có Passkey và ví: hasPasskey && hasWallet (sẽ redirect /buy)
+
+  if (!hasPasskey && !hasWallet) {
     return <OnRampScreen />;
   }
 
-  // This should not be reached due to useEffect redirect
+  if (hasPasskey && !hasWallet) {
+    return <OnRampScreen />;
+  }
+
   return <OnRampScreen />;
 }

@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { fetchCommonTokens, JupiterToken } from '@/lib/services/jupiter';
 import { useWalletStore } from '@/lib/store/wallet';
 import { Zap, Shield, Clock, Globe, Star, TrendingUp } from 'lucide-react';
+import { t } from '@/lib/i18n';
 
 export default function BuyPage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -62,10 +63,10 @@ export default function BuyPage() {
               {/* Main Buy Section */}
               <div className='text-center'>
                 <h1 className='text-4xl font-black text-white mb-1'>
-                  Buy USDC
+                  {t('buyPage.titleUSDC')}
                 </h1>
                 <p className='text-2xl font-bold text-primary mb-4'>
-                  Instantly & Secure
+                  {t('buyPage.subtitleInstantSecure')}
                 </p>
 
                 {/* Tags */}
@@ -75,21 +76,21 @@ export default function BuyPage() {
                     className='px-2.5 py-1 text-xs border-green-400/30 text-green-500 bg-green-400/10 hover:bg-green-400/20 transition-colors shadow-sm'
                   >
                     <Shield className='w-3 h-3 mr-1' />
-                    Face ID Login
+                    {t('buyPage.badges.faceIdLogin')}
                   </Badge>
                   <Badge
                     variant='outline'
                     className='px-2.5 py-1 text-xs border-blue-400/30 text-blue-500 bg-blue-400/10 hover:bg-blue-400/20 transition-colors shadow-sm'
                   >
                     <Zap className='w-3 h-3 mr-1' />
-                    Scan & Pay
+                    {t('buyPage.badges.scanAndPay')}
                   </Badge>
                   <Badge
                     variant='outline'
                     className='px-2.5 py-1 text-xs border-primary/30 text-primary bg-primary/10 hover:bg-primary/20 transition-colors shadow-sm'
                   >
                     <Clock className='w-3 h-3 mr-1' />
-                    Under 30 Seconds
+                    {t('buyPage.badges.under30s')}
                   </Badge>
                 </div>
               </div>
@@ -126,7 +127,13 @@ export default function BuyPage() {
 
             {/* Content */}
             <div className='bg-card'>
-              {hasWallet ? (
+              {loading ? (
+                <div className='p-6 space-y-3'>
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className='h-10 rounded bg-muted/30 animate-pulse' />
+                  ))}
+                </div>
+              ) : hasWallet ? (
                 <>
                   {activeTab === 'buy' && <OnRampForm tokenData={tokenData} />}
                   {activeTab === 'swap' && <SwapForm tokenData={tokenData} />}
