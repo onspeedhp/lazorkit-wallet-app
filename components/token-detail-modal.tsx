@@ -44,7 +44,7 @@ export const TokenDetailModal = ({
             </div>
             <div>
               <div className='font-semibold'>{token.symbol}</div>
-              <div className='text-sm text-muted-foreground'>Solana Token</div>
+              <div className='text-sm text-muted-foreground'>{t('token.solanaToken')}</div>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -73,19 +73,19 @@ export const TokenDetailModal = ({
           {/* Token Info */}
           <div className='space-y-4'>
             <div className='flex justify-between items-center'>
-              <span className='text-muted-foreground'>Price</span>
+              <span className='text-muted-foreground'>{t('common.price')}</span>
               <span className='font-semibold'>
                 {formatCurrency(token.priceUsd)}
               </span>
             </div>
 
             <div className='flex justify-between items-center'>
-              <span className='text-muted-foreground'>Market Cap</span>
+              <span className='text-muted-foreground'>{t('token.marketCap')}</span>
               <span className='font-semibold'>$2.1B</span>
             </div>
 
             <div className='flex justify-between items-center'>
-              <span className='text-muted-foreground'>Total Supply</span>
+              <span className='text-muted-foreground'>{t('token.totalSupply')}</span>
               <span className='font-semibold'>{token.totalSupply ? token.totalSupply.toLocaleString() : '—'}</span>
             </div>
 
@@ -98,7 +98,7 @@ export const TokenDetailModal = ({
 
           {/* Mint Address */}
           <div className='space-y-2'>
-            <span className='text-sm font-medium'>Mint Address</span>
+            <span className='text-sm font-medium'>{t('token.mintAddress')}</span>
             <div className='flex items-center space-x-2'>
               <div className='flex-1 p-2 bg-muted/50 rounded text-sm font-mono break-all'>
                 {token.mint}

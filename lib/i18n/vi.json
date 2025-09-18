@@ -28,7 +28,8 @@
     "all": "Tất cả",
     "none": "Không có",
     "yes": "Có",
-    "no": "Không"
+    "no": "Không",
+    "notAvailable": "Không khả dụng"
   },
   "app": {
     "title": "Ví LazorKit",
@@ -71,12 +72,36 @@
     "trustStripe": "Bảo mật bởi Stripe",
     "infoBanner": "Tỷ giá cố định cho demo • Tối thiểu $20 • Tối đa $500 • Không KYC trong nguyên mẫu.",
     "limits": "Giới hạn ngày $500 • Tháng $2,000 (demo)",
+    "paying": "Thanh toán",
+    "receiving": "Nhận",
+    "quickAmount": "Số tiền nhanh",
+    "exchangeRate": "Tỷ giá",
+    "usdConvertedHint": "Mệnh giá USD, quy đổi sang VND theo 1:27,000",
+    "creatingPasskey": "Đang tạo…",
+    "createPasskey": "Tạo Passkey",
+    "provisioningWallet": "Đang khởi tạo…",
+    "createWallet": "Tạo Ví",
     "steps": {
       "select": "Chọn",
       "preview": "Xem trước",
       "pay": "Thanh toán",
       "success": "Thành công"
     }
+  },
+  "buyPage": {
+    "titleUSDC": "Mua USDC",
+    "subtitleInstantSecure": "Nhanh & An toàn",
+    "badges": {
+      "faceIdLogin": "Đăng nhập Face ID",
+      "scanAndPay": "Quét & Thanh toán",
+      "under30s": "Trong dưới 30 giây"
+    }
+  },
+  "token": {
+    "solanaToken": "Token Solana",
+    "marketCap": "Vốn hoá",
+    "totalSupply": "Tổng cung",
+    "mintAddress": "Địa chỉ Mint"
   },
   "swap": {
     "title": "Hoán đổi Token",
@@ -169,7 +194,11 @@
   "assets": {
     "title": "Tài sản của bạn",
     "tokens": "Token",
-    "recentActivity": "Hoạt động gần đây"
+    "recentActivity": "Hoạt động gần đây",
+    "emptyTitle": "Chưa có tài sản",
+    "emptySubtitle": "Mua USDC để bắt đầu",
+    "buyCta": "Mua USDC",
+    "tokensCount": "Số token: {{count}}"
   },
   "devices": {
     "title": "Thiết bị đã kết nối",

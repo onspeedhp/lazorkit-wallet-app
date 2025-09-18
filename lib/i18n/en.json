@@ -28,7 +28,8 @@
     "all": "All",
     "none": "None",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "notAvailable": "Not available"
   },
   "app": {
     "title": "LazorKit",
@@ -71,12 +72,36 @@
     "trustStripe": "Stripe-secured",
     "infoBanner": "Rate fixed for demo • Min $20 • Max $500 • No KYC in prototype.",
     "limits": "Daily limit $500 • Monthly $2,000 (demo)",
+    "paying": "Paying",
+    "receiving": "Receiving",
+    "quickAmount": "Quick Amount",
+    "exchangeRate": "Exchange Rate",
+    "usdConvertedHint": "Amounts in USD, converted to VND at 1:27,000",
+    "creatingPasskey": "Creating…",
+    "createPasskey": "Create Passkey",
+    "provisioningWallet": "Provisioning…",
+    "createWallet": "Create Wallet",
     "steps": {
       "select": "Select",
       "preview": "Preview",
       "pay": "Pay",
       "success": "Success"
     }
+  },
+  "buyPage": {
+    "titleUSDC": "Buy USDC",
+    "subtitleInstantSecure": "Instantly & Secure",
+    "badges": {
+      "faceIdLogin": "Face ID Login",
+      "scanAndPay": "Scan & Pay",
+      "under30s": "Under 30 Seconds"
+    }
+  },
+  "token": {
+    "solanaToken": "Solana Token",
+    "marketCap": "Market Cap",
+    "totalSupply": "Total Supply",
+    "mintAddress": "Mint Address"
   },
   "swap": {
     "title": "Swap Tokens",
@@ -169,7 +194,11 @@
   "assets": {
     "title": "Your Assets",
     "tokens": "Tokens",
-    "recentActivity": "Recent Activity"
+    "recentActivity": "Recent Activity",
+    "emptyTitle": "No assets yet",
+    "emptySubtitle": "Buy USDC to get started",
+    "buyCta": "Buy USDC",
+    "tokensCount": "Tokens: {{count}}"
   },
   "devices": {
     "title": "Connected Devices",

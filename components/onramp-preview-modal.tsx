@@ -85,8 +85,8 @@ export function OnRampPreviewModal({
               ? 'Apple Pay'
               : data.paymentMethod === 'vnpay'
               ? 'VNPay QR'
-              : 'Card'}{' '}
-            • Stripe-secured (demo)
+              : t('onRamp.card')}{' '}
+            • {t('onRamp.trustStripe')}
           </div>
 
           <Button

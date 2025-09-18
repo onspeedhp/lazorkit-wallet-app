@@ -27,10 +27,18 @@ interface OnRampData {
 
 export const OnRampScreen = () => {
   const router = useRouter();
-  const { onrampFake, setHasWallet, setPubkey } = useWalletStore();
+  const {
+    hasPasskey,
+    hasWallet,
+    setHasPasskey,
+    setHasWallet,
+    setPubkey,
+    hasAssets,
+  } = useWalletStore();
   const [showPreview, setShowPreview] = useState(false);
   const [onrampData, setOnrampData] = useState<OnRampData | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
 
   const handlePreview = (data: OnRampData) => {
     setOnrampData(data);
@@ -64,9 +72,28 @@ export const OnRampScreen = () => {
     setOnrampData(null);
   };
 
+  const handleCreatePasskey = async () => {
+    setIsBusy(true);
+    // Simulate platform passkey creation
+    await new Promise((r) => setTimeout(r, 800));
+    setHasPasskey(true);
+    setIsBusy(false);
+  };
+
+  const handleCreateWallet = async () => {
+    setIsBusy(true);
+    // Simulate wallet provisioning and pubkey generation
+    await new Promise((r) => setTimeout(r, 800));
+    const newPubkey = generatePublicKey();
+    setPubkey(newPubkey);
+    setHasWallet(true);
+    setIsBusy(false);
+  };
+
   return (
-    <div className='container mx-auto px-4 py-6 max-w-md'>
-      <div className='space-y-8'>
+    <div className='container mx-auto px-4 py-6 max-w-md min-h-[80vh] flex items-center justify-center'>
+      <div className='space-y-8 w-full'>
+        {/* Hero */}
         <div className='text-center space-y-4'>
           <div className='relative'>
             <div className='w-20 h-20 mx-auto rounded-2xl gradient-primary flex items-center justify-center animate-bounce-gentle'>
@@ -84,9 +111,55 @@ export const OnRampScreen = () => {
           </div>
         </div>
 
-        <div className='animate-fade-in'>
-          <OnRampForm onPreview={handlePreview} />
+        {/* Stepper */}
+        <div className='grid grid-cols-3 gap-2 text-center text-xs'>
+          <div className={`rounded-lg p-2 border ${hasPasskey ? 'border-green-400/50 bg-green-400/10 text-green-600' : 'border-border/50 bg-muted/30 text-muted-foreground'}`}>
+            1. Passkey
+          </div>
+          <div className={`rounded-lg p-2 border ${(hasPasskey && hasWallet) ? 'border-green-400/50 bg-green-400/10 text-green-600' : 'border-border/50 bg-muted/30 text-muted-foreground'}`}>
+            2. Wallet
+          </div>
+          <div className={`rounded-lg p-2 border ${(hasPasskey && hasWallet) ? 'border-primary/50 bg-primary/10 text-primary' : 'border-border/50 bg-muted/30 text-muted-foreground'}`}>
+            3. Buy
+          </div>
         </div>
+
+        {/* Actions for missing steps */}
+        {!hasPasskey && (
+          <div className='space-y-3'>
+            <p className='text-sm text-muted-foreground text-center'>
+              {t('settings.passkeyStatus')}: {t('common.notAvailable')}
+            </p>
+            <Button className='w-full' onClick={handleCreatePasskey} disabled={isBusy}>
+              {isBusy ? t('onRamp.creatingPasskey') : t('onRamp.createPasskey')}
+            </Button>
+          </div>
+        )}
+
+        {hasPasskey && !hasWallet && (
+          <div className='space-y-3'>
+            <p className='text-sm text-muted-foreground text-center'>
+              {t('wallet.totalBalance')}: 0 • {t('assets.emptyTitle')}
+            </p>
+            <Button className='w-full' onClick={handleCreateWallet} disabled={isBusy}>
+              {isBusy ? t('onRamp.provisioningWallet') : t('onRamp.createWallet')}
+            </Button>
+          </div>
+        )}
+
+        {/* On-ramp form only when both steps complete */}
+        {hasPasskey && hasWallet && (
+          <div className='animate-fade-in'>
+            <OnRampForm onPreview={handlePreview} />
+          </div>
+        )}
+
+        {/* Nudge if wallet exists but no assets yet */}
+        {hasPasskey && hasWallet && hasAssets && !hasAssets() && (
+          <div className='text-center text-xs text-muted-foreground'>
+            {t('assets.emptySubtitle')}
+          </div>
+        )}
 
         <div className='text-center'>
           <div className='inline-flex items-center space-x-2 px-4 py-2 bg-muted/50 rounded-full'>
